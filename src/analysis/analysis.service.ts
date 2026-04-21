@@ -5,7 +5,22 @@ import { AnalysisQueryService } from "./analysis-query.service";
 import { AnalysisReportBuilderService } from "./analysis-report-builder.service";
 import { AnalysisReportResult, IExportTablePayload } from "./analysis.types";
 import { UpdateFileMonitoringStatusDto } from "./dto/update-file-monitoring-status.dto";
-import { log } from "console";
+
+export type AnalysisReportSectionKey = keyof Pick<
+  AnalysisReportResult,
+  | "capabilities"
+  | "overview"
+  | "sources"
+  | "timeline"
+  | "files"
+  | "statusHistory"
+  | "renameHistory"
+  | "processReads"
+  | "operations"
+  | "diagramData"
+  | "chains"
+  | "notices"
+>;
 
 @injectable()
 export class AnalysisService {
@@ -18,6 +33,14 @@ export class AnalysisService {
   async getReport(filter: { limit?: number } = {}): Promise<AnalysisReportResult> {
     const sourceData = await this.queryService.fetchReportSourceData(filter);
     return this.reportBuilder.buildReport(sourceData);
+  }
+
+  async getReportSection<K extends AnalysisReportSectionKey>(
+    section: K,
+    filter: { limit?: number } = {},
+  ): Promise<AnalysisReportResult[K]> {
+    const report = await this.getReport(filter);
+    return report[section];
   }
 
   async updateFileMonitoringStatus(
