@@ -8,7 +8,7 @@ import { errorHandler } from "./middleware/error-handler";
 import { PREFIX_META, ROUTE_META, RouteInfo } from "./shared/utils/routing";
 import { asyncHandler, RouteHandler } from "./shared/utils/async-handler";
 import { FileController } from "./event/event.controller";
-import { EventServiceToken, FileManagementServiceToken, TOKENS } from "./constants/tokens";
+import { FileManagementServiceToken, FileRepositoryToken, FileReadRepositoryToken, FileWriteRepositoryToken, FileVersionRepositoryToken } from "./constants/tokens";
 import { EventService } from "./event/event.service";
 import { FileMamagementContoller } from "./file-management/file-management.controller";
 import { FileManagementService } from "./file-management/file-management.service";
@@ -16,7 +16,8 @@ import { AnalysisController } from "./analysis/analysis.controller";
 import { AppDatabaseService } from "./database/app-database.service";
 import { DatabaseSettingsController } from "./database/database-settings.controller";
 import { Connection } from "typeorm";
-import { FileRead, FileVersion, FileWrite } from "./entities";
+import { InjectionToken } from "tsyringe";
+import { File, FileRead, FileVersion, FileWrite } from "./entities";
 EventEmitter.defaultMaxListeners = 15;
 
 type ControllerClass = new (...args: never[]) => object;
@@ -56,7 +57,7 @@ const registerRoute = (
 
 function registerRepositories(
     dataSource: Connection,
-    repos: { token: symbol; entity: any }[]
+    repos: { token: InjectionToken<any>; entity: any }[]
 ) {
     for (const { token, entity } of repos) {
         container.register(token, {
@@ -77,11 +78,12 @@ async function bootstrap() {
     app.use(express.urlencoded({ extended: true, limit: "10mb" }));
     app.use(cors())
 
-    registerRepositories(databaseService., [
-        { token: TOKENS.fileRepository, entity: File },
-        { token: TOKENS.fileReadRepository, entity: FileRead },
-        { token: TOKENS.fileWriteRepository, entity: FileWrite },
-        { token: TOKENS.fileVersionRepository, entity: FileVersion },
+    const connection = await databaseService.getConnection();
+    registerRepositories(connection, [
+        { token: FileRepositoryToken, entity: File },
+        { token: FileReadRepositoryToken, entity: FileRead },
+        { token: FileWriteRepositoryToken, entity: FileWrite },
+        { token: FileVersionRepositoryToken, entity: FileVersion },
     ]);
 
     const providers: ProviderClass[] = [
@@ -91,6 +93,7 @@ async function bootstrap() {
     providers.forEach((provider) => {
         container.registerSingleton(provider);
     });
+    container.registerSingleton(FileManagementServiceToken, FileManagementService);
 
     const controllers: ControllerClass[] = [
         FileController,

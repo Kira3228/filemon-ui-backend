@@ -1,43 +1,32 @@
-import { inject, injectable } from "tsyringe";
-import { Controller } from "../shared/utils/routing";
-import { AnalysisFileItem, AnalysisFileRow, AnalysisFileVersionRow, AnalysisOperationRow, AnalysisReportSourceData, AnalysisSourceItem } from "./analysis.types";
+import { injectable } from "tsyringe";
+import {
+  AnalysisFileItem,
+  AnalysisFileVersionRow,
+  AnalysisOperationRow,
+  AnalysisSourceItem,
+} from "./analysis.types";
 import { AnalysisNormalizerService } from "./analysis-normalizer.service";
 import { isDefined } from "./analysis-report-builder.mappers";
-import { Repository } from "typeorm";
-import { File } from "../entities";
 
-interface BuildSourceRootsOptions {
-  files: AnalysisReportSourceData["files"];
+export interface BuildSourceRootsOptions {
   fileItems: AnalysisFileItem[];
   fileItemsById: Map<number, AnalysisFileItem>;
-  filesById: Map<number, AnalysisFileRow>;
   normalizer: AnalysisNormalizerService;
   versionsByFile: Map<number, AnalysisFileVersionRow[]>;
   readsByFile: Map<number, AnalysisOperationRow[]>;
-  childrenByFile: Map<number, Set<number>>;
   resolveDescendants: (fileId: number) => number[];
 }
 
 @injectable()
 export class AnalysisSourcesService {
-  constructor(
-    @inject(``) private readonly fileRepo: Repository<File>
-
-  ) { }
-
-  async getSources() {
-
-  }
-
-  private buildSourceRoots = ({
-    files,
+  buildSourceRoots({
     fileItems,
     fileItemsById,
     normalizer,
     versionsByFile,
     readsByFile,
     resolveDescendants,
-  }: BuildSourceRootsOptions): AnalysisSourceItem[] => {
+  }: BuildSourceRootsOptions): AnalysisSourceItem[] {
     return fileItems
       .filter((item) => item.sourceIds.length === 1 && item.sourceIds[0] === item.id)
       .map((item) => {
@@ -81,8 +70,4 @@ export class AnalysisSourcesService {
         };
       });
   }
-
-
-
-
 }
