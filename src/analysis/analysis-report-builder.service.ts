@@ -9,7 +9,7 @@ export class AnalysisReportBuilderService {
   private readonly trackingStatus: TMonitoringStatus = 1;
   private readonly deletedStatus: TMonitoringStatus = 2;
 
-  constructor(private readonly normalizer: AnalysisNormalizerService) {}
+  constructor(private readonly normalizer: AnalysisNormalizerService) { }
 
   buildReport(input: AnalysisReportSourceData): AnalysisReportResult {
     const indexes = buildAnalysisReportIndexes(input, this.normalizer);

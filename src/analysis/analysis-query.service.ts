@@ -27,7 +27,7 @@ export class AnalysisQueryService {
   constructor(
     private readonly databaseService: AppDatabaseService,
     private readonly normalizer: AnalysisNormalizerService,
-  ) {}
+  ) { }
 
   async fetchReportSourceData(filter: { limit?: number } = {}): Promise<AnalysisReportSourceData> {
     const limit = Math.max(50, Math.min(Number(filter.limit) || 250, 1000));

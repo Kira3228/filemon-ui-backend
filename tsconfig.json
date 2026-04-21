@@ -11,15 +11,18 @@
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "types": [
+      "jest",
+      "node"
+    ]
   },
   "include": [
     "src/**/*",
-    "src/User/user.service.ts",
-    "src/User/user.controller.ts",
-    "src/User/user.router.ts"
+    "tests/**/*"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "dist"
   ]
 }

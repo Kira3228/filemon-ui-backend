@@ -5,6 +5,7 @@ import { AnalysisQueryService } from "./analysis-query.service";
 import { AnalysisReportBuilderService } from "./analysis-report-builder.service";
 import { AnalysisReportResult, IExportTablePayload } from "./analysis.types";
 import { UpdateFileMonitoringStatusDto } from "./dto/update-file-monitoring-status.dto";
+import { log } from "console";
 
 @injectable()
 export class AnalysisService {
@@ -12,7 +13,7 @@ export class AnalysisService {
     private readonly queryService: AnalysisQueryService,
     private readonly reportBuilder: AnalysisReportBuilderService,
     private readonly exportService: AnalysisExportService,
-  ) {}
+  ) { }
 
   async getReport(filter: { limit?: number } = {}): Promise<AnalysisReportResult> {
     const sourceData = await this.queryService.fetchReportSourceData(filter);

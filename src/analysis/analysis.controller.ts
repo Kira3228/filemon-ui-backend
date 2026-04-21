@@ -34,6 +34,7 @@ export class AnalysisController {
     const result = await this.analysisService.getReport({
       limit: req.query.limit ? Number(req.query.limit) : undefined,
     });
+
     res.set("Cache-Control", "no-store");
     res.status(200).json(result);
   }

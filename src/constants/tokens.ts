@@ -4,6 +4,7 @@ import { File, FileRead, FileVersion, FileWrite } from "../entities";
 import { Repository } from "typeorm";
 import { contextsKey } from "express-validator/src/base";
 import { FileManagementService } from "../file-management/file-management.service";
+import { FileService } from "../files/file.service";
 
 export const EventServiceToken: InjectionToken<EventService> =
   "EventServiceToken";
@@ -22,3 +23,14 @@ export const FileVersionRepositoryToken: InjectionToken<Repository<FileVersion>>
 
 export const FileManagementServiceToken: InjectionToken<FileManagementService> =
   "FileManagementServiceToken"
+
+
+const repositoryToken = <T>(entityName: string) => Symbol(`${entityName}Repository`)
+
+
+export const TOKENS = {
+  fileReadRepository: repositoryToken<FileRead>("FileRead"),
+  fileWriteRepository: repositoryToken<FileWrite>("FileWrite"),
+  fileRepository: repositoryToken<File>("File"),
+  fileVersionRepository: repositoryToken<FileVersion>("FileVersion"),
+}
