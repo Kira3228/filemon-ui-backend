@@ -1,0 +1,34 @@
+flowchart TD
+    %% Все версии отдельно — максимальная детализация
+    FV_1("xa11.txt\nv1  dNone★"):::fv
+    FV_2("xa12.txt\nv1  dNone★"):::fv
+    FV_3("DERIVED1\nv1  d1"):::fv
+    FV_4(".DERIVED1.kate-swp\nv1  d2"):::fv
+    FV_5("xa14.txt\nv1  dNone★"):::fv
+    FV_6("qwerqwer3\nv1  d2"):::fv
+    PV_2("kate\nPID 145411  v2"):::pv
+    PV_1("kate\nPID 145411  v1"):::pv
+    PV_3("fly-open-service\nPID 144015  v1"):::pv
+    PV_6("kate\nPID 146112  v2"):::pv
+    PV_4("kate\nPID 146112  v1"):::pv
+    PV_5("fly-fm-service\nPID 143711  v1"):::pv
+    FV_1 -->|"читает"| PV_1
+    FV_2 -->|"читает"| PV_2
+    FV_3 -->|"читает"| PV_2
+    FV_3 -->|"читает"| PV_3
+    FV_3 -->|"читает"| PV_4
+    FV_3 -->|"читает"| PV_5
+    FV_5 -->|"читает"| PV_6
+    FV_3 -->|"читает"| PV_6
+    FV_6 -->|"читает"| PV_6
+    PV_2 -->|"пишет"| FV_3
+    PV_4 -->|"пишет"| FV_4
+    PV_6 -->|"пишет"| FV_6
+
+    classDef fv fill:#e8f5e9,stroke:#2e7d32
+    classDef pv fill:#e3f2fd,stroke:#1565c0
+    classDef source fill:#fffde7,stroke:#f9a825,stroke-width:3px
+    
+    class FV_1 source
+    class FV_2 source
+    class FV_5 source

@@ -1,0 +1,16 @@
+{
+  "watch": [
+    "src",
+    "schema.sql"
+  ],
+  "ext": "ts,json,sql",
+  "ignore": [
+    "dist",
+    "node_modules",
+    "config.json",
+    "*.db",
+    "*.db-shm",
+    "*.db-wal"
+  ],
+  "exec": "ts-node src/main.ts"
+}
