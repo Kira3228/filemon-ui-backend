@@ -8,6 +8,7 @@ import {
 import { Controller, Get, Patch, Post } from "../shared/utils/routing";
 import {
   AnalysisReportResult,
+  AnalysisReportSummary,
   IExportTablePayload,
 } from "./analysis.types";
 import { AnalysisReportSectionKey, AnalysisService } from "./analysis.service";
@@ -44,6 +45,19 @@ export class AnalysisController {
     res: Response<AnalysisReportResult["capabilities"]>,
   ) {
     await this.sendReportSection(req, res, "capabilities");
+  }
+
+  @Get(`/report/summary`)
+  async getReportSummary(
+    req: Request<Record<string, never>, AnalysisReportSummary, never, AnalysisReportQuery>,
+    res: Response<AnalysisReportSummary>,
+  ) {
+    const result = await this.analysisService.getReportSummary({
+      limit: req.query.limit ? Number(req.query.limit) : undefined,
+    });
+
+    res.set("Cache-Control", "no-store");
+    res.status(200).json(result);
   }
 
   @Get(`/report/overview`)

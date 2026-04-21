@@ -3,24 +3,15 @@ import { UpdateMonitoringStatusResult } from "../contracts/api-contracts";
 import { AnalysisExportService } from "./analysis-export.service";
 import { AnalysisQueryService } from "./analysis-query.service";
 import { AnalysisReportBuilderService } from "./analysis-report-builder.service";
-import { AnalysisReportResult, IExportTablePayload } from "./analysis.types";
+import {
+  AnalysisReportResult,
+  AnalysisReportSectionKey,
+  AnalysisReportSummary,
+  IExportTablePayload,
+} from "./analysis.types";
 import { UpdateFileMonitoringStatusDto } from "./dto/update-file-monitoring-status.dto";
 
-export type AnalysisReportSectionKey = keyof Pick<
-  AnalysisReportResult,
-  | "capabilities"
-  | "overview"
-  | "sources"
-  | "timeline"
-  | "files"
-  | "statusHistory"
-  | "renameHistory"
-  | "processReads"
-  | "operations"
-  | "diagramData"
-  | "chains"
-  | "notices"
->;
+export { AnalysisReportSectionKey };
 
 @injectable()
 export class AnalysisService {
@@ -35,12 +26,17 @@ export class AnalysisService {
     return this.reportBuilder.buildReport(sourceData);
   }
 
+  async getReportSummary(filter: { limit?: number } = {}): Promise<AnalysisReportSummary> {
+    const sourceData = await this.queryService.fetchReportSourceData(filter);
+    return this.reportBuilder.buildReportSummary(sourceData);
+  }
+
   async getReportSection<K extends AnalysisReportSectionKey>(
     section: K,
     filter: { limit?: number } = {},
   ): Promise<AnalysisReportResult[K]> {
-    const report = await this.getReport(filter);
-    return report[section];
+    const sourceData = await this.queryService.fetchReportSourceData(filter);
+    return this.reportBuilder.buildReportSection(sourceData, section);
   }
 
   async updateFileMonitoringStatus(

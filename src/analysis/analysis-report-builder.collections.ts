@@ -3,7 +3,6 @@ import type {
   AnalysisFileRow,
   AnalysisManualStatusEvent,
   AnalysisNormalizedFileEvent,
-  AnalysisOperationRow,
   AnalysisProcessReadGroup,
   AnalysisRenameHistoryItem,
   AnalysisReportSourceData,

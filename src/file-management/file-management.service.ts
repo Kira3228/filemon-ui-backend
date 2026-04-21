@@ -18,7 +18,7 @@ export class FileManagementService {
   }
 
 
-  async getFiles(filter?: EventFilterDto) {
+  async getFiles() {
     const filesRepo = await this.databaseService.getRepository(File);
     const qb = filesRepo.createQueryBuilder("f")
       .leftJoinAndSelect("f.filesystem", "fs")

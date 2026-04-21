@@ -15,7 +15,7 @@ export class DatabaseSettingsController {
 
   @Get(`/database`)
   getDatabaseSettings(
-    req: Request,
+
     res: Response<DatabaseConnectionSettings>,
   ) {
     res.set("Cache-Control", "no-store");

@@ -447,3 +447,24 @@ export interface AnalysisReportResult {
   chains: Record<string, AnalysisChainEntry>;
   notices: string[];
 }
+
+export type AnalysisReportSectionKey = keyof Pick<
+  AnalysisReportResult,
+  | "capabilities"
+  | "overview"
+  | "sources"
+  | "timeline"
+  | "files"
+  | "statusHistory"
+  | "renameHistory"
+  | "processReads"
+  | "operations"
+  | "diagramData"
+  | "chains"
+  | "notices"
+>;
+
+export type AnalysisReportSummary = Pick<
+  AnalysisReportResult,
+  "generatedAt" | "capabilities" | "overview" | "notices"
+>;
