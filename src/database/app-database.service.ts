@@ -26,6 +26,7 @@ import {
 } from "../entities";
 import { HttpError, ValidationError } from "../errors/http-errors";
 import { ensureManualFileStatusEventsTable, validateSchemaSql } from "./schema";
+import { log } from "console";
 
 type PersistedDatabaseConfig = {
   databasePath: string;

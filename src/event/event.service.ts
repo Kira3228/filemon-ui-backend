@@ -10,10 +10,6 @@ import { EventFilterDto } from "./dto/event-filter.dto";
 import { AppDatabaseService } from "../database/app-database.service";
 import { ensureManualFileStatusEventsTable, hasTable } from "../database/schema";
 
-
-
-
-
 export interface GetFilesFilter {
   filesystemId?: number;
   deleted?: boolean;

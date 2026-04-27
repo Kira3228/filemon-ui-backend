@@ -7,15 +7,16 @@ import {
   ApiErrorResponse,
 } from "../contracts/api-contracts";
 import { AppDatabaseService } from "./app-database.service";
+import { log } from "console";
 
 @Controller(`/settings`)
 @injectable()
 export class DatabaseSettingsController {
-  constructor(private readonly appDatabaseService: AppDatabaseService) {}
+  constructor(private readonly appDatabaseService: AppDatabaseService) { }
 
   @Get(`/database`)
   getDatabaseSettings(
-
+    req: Request,
     res: Response<DatabaseConnectionSettings>,
   ) {
     res.set("Cache-Control", "no-store");
