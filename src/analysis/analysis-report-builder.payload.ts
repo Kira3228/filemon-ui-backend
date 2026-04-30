@@ -63,7 +63,9 @@ export const buildAnalysisReportPayload = ({
   const sourceRoots = sourcesService.buildSourceRoots({
     fileItems,
     fileItemsById,
+    limit: input.limit,
     normalizer,
+    offset: input.offset,
     versionsByFile,
     readsByFile,
     resolveDescendants,

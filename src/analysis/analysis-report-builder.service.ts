@@ -130,7 +130,9 @@ export class AnalysisReportBuilderService {
         sources = this.sourcesService.buildSourceRoots({
           fileItems: getFileItems(),
           fileItemsById: getFileItemsById(),
+          limit: input.limit,
           normalizer: this.normalizer,
+          offset: input.offset,
           versionsByFile: indexes.versionsByFile,
           readsByFile: indexes.readsByFile,
           resolveDescendants,

@@ -29,11 +29,18 @@ export class AnalysisQueryService {
     private readonly normalizer: AnalysisNormalizerService,
   ) { }
 
-  async fetchReportSourceData(filter: { limit?: number } = {}): Promise<AnalysisReportSourceData> {
-    const limit = Math.max(50, Math.min(Number(filter.limit) || 250, 1000));
+  async fetchReportSourceData(filter: {
+    limit?: number;
+    page?: number;
+    paginationTarget?: "files" | "sources";
+  } = {}): Promise<AnalysisReportSourceData> {
+    const limit = Math.max(1, Math.min(Number(filter.limit) || 250, 1000));
+    const page = Math.max(1, Number(filter.page) || 1);
+    const offset = (page - 1) * limit;
     const fileRepo = await this.databaseService.getRepository(File);
     const manager = fileRepo.manager;
 
+    const shouldPaginateFiles = filter.paginationTarget !== "sources";
     const files = await manager.query(`
       SELECT
         f.id,
@@ -49,9 +56,15 @@ export class AnalysisQueryService {
       FROM files f
       LEFT JOIN filesystems fs ON fs.id = f.filesystem_id
       ORDER BY f.tracking_started_at DESC, f.id DESC
-    `) as AnalysisFileRow[];
+      ${shouldPaginateFiles ? "LIMIT ? OFFSET ?" : ""}
+    `, shouldPaginateFiles ? [limit, offset] : []) as AnalysisFileRow[];
 
-    const fileVersions = await manager.query(`
+    const fileIds = files.map((file) => Number(file.id)).filter((id) => Number.isInteger(id) && id > 0);
+    const fileIdsPlaceholders = fileIds.map(() => "?").join(", ");
+    const hasFiles = fileIds.length > 0;
+
+    const fileVersions = hasFiles
+      ? await manager.query(`
       SELECT
         fv.id,
         fv.file_id,
@@ -73,10 +86,25 @@ export class AnalysisQueryService {
       LEFT JOIN processes p ON p.id = pv.process_id
       LEFT JOIN os_users u ON u.id = p.os_user_id
       LEFT JOIN files ofile ON ofile.id = pv.origin_file_id
+      WHERE fv.file_id IN (${fileIdsPlaceholders})
       ORDER BY fv.created_at DESC, fv.id DESC
-    `) as AnalysisFileVersionRow[];
+    `, fileIds) as AnalysisFileVersionRow[]
+      : [];
 
-    const processVersions = await manager.query(`
+    const fileOriginProcessVersionIds = files
+      .map((file) => Number(file.origin_process_version_id))
+      .filter((id) => Number.isInteger(id) && id > 0);
+
+    const processVersionIds = Array.from(new Set([
+      ...fileOriginProcessVersionIds,
+      ...fileVersions
+        .map((version) => Number(version.origin_process_version_id))
+        .filter((id) => Number.isInteger(id) && id > 0),
+    ]));
+    const processVersionIdsPlaceholders = processVersionIds.map(() => "?").join(", ");
+
+    const processVersions = processVersionIds.length > 0
+      ? await manager.query(`
       SELECT
         pv.id,
         pv.process_id,
@@ -92,10 +120,13 @@ export class AnalysisQueryService {
       LEFT JOIN processes p ON p.id = pv.process_id
       LEFT JOIN os_users u ON u.id = p.os_user_id
       LEFT JOIN files ofile ON ofile.id = pv.origin_file_id
+      WHERE pv.id IN (${processVersionIdsPlaceholders})
       ORDER BY pv.created_at DESC, pv.id DESC
-    `) as AnalysisProcessVersionRow[];
+    `, processVersionIds) as AnalysisProcessVersionRow[]
+      : [];
 
-    const reads = await manager.query(`
+    const reads = hasFiles
+      ? await manager.query(`
       SELECT
         fr.file_id,
         fr.file_version_id,
@@ -124,10 +155,13 @@ export class AnalysisQueryService {
       LEFT JOIN os_users u ON u.id = p.os_user_id
       LEFT JOIN files ofile ON ofile.id = pv.origin_file_id
       LEFT JOIN file_versions fv ON fv.id = fr.file_version_id
+      WHERE fr.file_id IN (${fileIdsPlaceholders})
       ORDER BY fr.created_at DESC, fr.file_id DESC
-    `) as AnalysisOperationRow[];
+    `, fileIds) as AnalysisOperationRow[]
+      : [];
 
-    const writes = await manager.query(`
+    const writes = hasFiles
+      ? await manager.query(`
       SELECT
         fw.file_id,
         fw.file_version_id,
@@ -156,32 +190,82 @@ export class AnalysisQueryService {
       LEFT JOIN os_users u ON u.id = p.os_user_id
       LEFT JOIN files ofile ON ofile.id = pv.origin_file_id
       LEFT JOIN file_versions fv ON fv.id = fw.file_version_id
+      WHERE fw.file_id IN (${fileIdsPlaceholders})
       ORDER BY fw.created_at DESC, fw.file_id DESC
-    `) as AnalysisOperationRow[];
-
-    const statusRows = await manager.query(`
-      SELECT id, file_id, status, created_at
-      FROM file_statuses
-      ORDER BY created_at DESC, id DESC
-    `) as AnalysisStatusRow[];
-
-    const manualStatusRows = (await hasTable(manager, "manual_file_status_events"))
-      ? await manager.query(`
-      SELECT id, file_id, status_history_id, action, previous_status, new_status, created_at, details
-      FROM manual_file_status_events
-      ORDER BY created_at DESC, id DESC
-    `) as AnalysisManualStatusRow[]
+    `, fileIds) as AnalysisOperationRow[]
       : [];
 
-    const fileEventRows = await manager.query(`
+    const readWriteProcessVersionIds = Array.from(new Set([
+      ...reads
+        .map((row) => Number(row.process_version_id))
+        .filter((id) => Number.isInteger(id) && id > 0),
+      ...writes
+        .map((row) => Number(row.process_version_id))
+        .filter((id) => Number.isInteger(id) && id > 0),
+    ]));
+
+    const missingProcessVersionIds = readWriteProcessVersionIds
+      .filter((id) => !processVersionIds.includes(id));
+
+    if (missingProcessVersionIds.length > 0) {
+      const missingProcessVersionIdsPlaceholders = missingProcessVersionIds.map(() => "?").join(", ");
+      const relatedProcessVersions = await manager.query(`
+        SELECT
+          pv.id,
+          pv.process_id,
+          pv.version_number,
+          pv.created_at,
+          p.executable_path,
+          p.pid,
+          u.username,
+          u.uid,
+          ofile.id as origin_file_id,
+          ofile.full_path as origin_file_path
+        FROM process_versions pv
+        LEFT JOIN processes p ON p.id = pv.process_id
+        LEFT JOIN os_users u ON u.id = p.os_user_id
+        LEFT JOIN files ofile ON ofile.id = pv.origin_file_id
+        WHERE pv.id IN (${missingProcessVersionIdsPlaceholders})
+        ORDER BY pv.created_at DESC, pv.id DESC
+      `, missingProcessVersionIds) as AnalysisProcessVersionRow[];
+
+      processVersions.push(...relatedProcessVersions);
+    }
+
+    const statusRows = hasFiles
+      ? await manager.query(`
+      SELECT id, file_id, status, created_at
+      FROM file_statuses
+      WHERE file_id IN (${fileIdsPlaceholders})
+      ORDER BY created_at DESC, id DESC
+    `, fileIds) as AnalysisStatusRow[]
+      : [];
+
+    const manualStatusRows = (await hasTable(manager, "manual_file_status_events"))
+      ? hasFiles
+        ? await manager.query(`
+      SELECT id, file_id, status_history_id, action, previous_status, new_status, created_at, details
+      FROM manual_file_status_events
+      WHERE file_id IN (${fileIdsPlaceholders})
+      ORDER BY created_at DESC, id DESC
+    `, fileIds) as AnalysisManualStatusRow[]
+        : []
+      : [];
+
+    const fileEventRows = hasFiles
+      ? await manager.query(`
       SELECT id, file_id, event, created_at, details
       FROM file_events
+      WHERE file_id IN (${fileIdsPlaceholders})
       ORDER BY created_at DESC, id DESC
-    `) as AnalysisFileEventRow[];
+    `, fileIds) as AnalysisFileEventRow[]
+      : [];
 
     return {
       generatedAt: new Date().toISOString(),
       limit,
+      page,
+      offset,
       files,
       fileVersions,
       processVersions,

@@ -172,6 +172,8 @@ export interface AnalysisNormalizedFileEvent {
 export interface AnalysisReportSourceData {
   generatedAt: string;
   limit: number;
+  page: number;
+  offset: number;
   files: AnalysisFileRow[];
   fileVersions: AnalysisFileVersionRow[];
   processVersions: AnalysisProcessVersionRow[];

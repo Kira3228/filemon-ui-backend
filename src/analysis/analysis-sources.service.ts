@@ -11,7 +11,9 @@ import { isDefined } from "./analysis-report-builder.mappers";
 export interface BuildSourceRootsOptions {
   fileItems: AnalysisFileItem[];
   fileItemsById: Map<number, AnalysisFileItem>;
+  limit?: number;
   normalizer: AnalysisNormalizerService;
+  offset?: number;
   versionsByFile: Map<number, AnalysisFileVersionRow[]>;
   readsByFile: Map<number, AnalysisOperationRow[]>;
   resolveDescendants: (fileId: number) => number[];
@@ -22,7 +24,9 @@ export class AnalysisSourcesService {
   buildSourceRoots({
     fileItems,
     fileItemsById,
+    limit,
     normalizer,
+    offset = 0,
     versionsByFile,
     readsByFile,
     resolveDescendants,
@@ -68,6 +72,7 @@ export class AnalysisSourcesService {
             .filter(isDefined)
             .slice(0, 8),
         };
-      });
+      })
+      .slice(offset, offset + (limit || 250));
   }
 }

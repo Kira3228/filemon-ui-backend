@@ -12,9 +12,11 @@ import {
   IExportTablePayload,
 } from "./analysis.types";
 import { AnalysisReportSectionKey, AnalysisService } from "./analysis.service";
+import { log } from "console";
 
 type AnalysisReportQuery = {
   limit?: string;
+  page?: string;
 };
 
 type AnalysisRouteParams = {
@@ -33,6 +35,7 @@ export class AnalysisController {
   ) {
     const result = await this.analysisService.getReport({
       limit: req.query.limit ? Number(req.query.limit) : undefined,
+      page: req.query.page ? Number(req.query.page) : undefined,
     });
 
     res.set("Cache-Control", "no-store");
@@ -54,6 +57,7 @@ export class AnalysisController {
   ) {
     const result = await this.analysisService.getReportSummary({
       limit: req.query.limit ? Number(req.query.limit) : undefined,
+      page: req.query.page ? Number(req.query.page) : undefined,
     });
 
     res.set("Cache-Control", "no-store");
@@ -148,6 +152,8 @@ export class AnalysisController {
     await this.sendReportSection(req, res, "notices");
   }
 
+
+
   @Post(`/export-table`)
   async exportTable(
     req: Request<Record<string, never>, unknown, IExportTablePayload>,
@@ -192,8 +198,10 @@ export class AnalysisController {
     res: Response<AnalysisReportResult[K]>,
     section: K,
   ) {
+    
     const result = await this.analysisService.getReportSection(section, {
       limit: req.query.limit ? Number(req.query.limit) : undefined,
+      page: req.query.page ? Number(req.query.page) : undefined,
     });
 
     res.set("Cache-Control", "no-store");

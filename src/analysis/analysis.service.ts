@@ -21,21 +21,25 @@ export class AnalysisService {
     private readonly exportService: AnalysisExportService,
   ) { }
 
-  async getReport(filter: { limit?: number } = {}): Promise<AnalysisReportResult> {
+  async getReport(filter: { limit?: number; page?: number } = {}): Promise<AnalysisReportResult> {
     const sourceData = await this.queryService.fetchReportSourceData(filter);
     return this.reportBuilder.buildReport(sourceData);
   }
 
-  async getReportSummary(filter: { limit?: number } = {}): Promise<AnalysisReportSummary> {
+  async getReportSummary(filter: { limit?: number; page?: number } = {}): Promise<AnalysisReportSummary> {
     const sourceData = await this.queryService.fetchReportSourceData(filter);
     return this.reportBuilder.buildReportSummary(sourceData);
   }
 
   async getReportSection<K extends AnalysisReportSectionKey>(
     section: K,
-    filter: { limit?: number } = {},
+    filter: { limit?: number; page?: number } = {},
   ): Promise<AnalysisReportResult[K]> {
-    const sourceData = await this.queryService.fetchReportSourceData(filter);
+    const sourceData = await this.queryService.fetchReportSourceData({
+      ...filter,
+      paginationTarget: section === "sources" ? "sources" : "files",
+    });
+
     return this.reportBuilder.buildReportSection(sourceData, section);
   }
 
