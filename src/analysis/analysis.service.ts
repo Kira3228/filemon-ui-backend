@@ -27,18 +27,71 @@ export class AnalysisService {
   }
 
   async getReportSummary(filter: { limit?: number; page?: number } = {}): Promise<AnalysisReportSummary> {
-    const sourceData = await this.queryService.fetchReportSourceData(filter);
+    const sourceData = await this.queryService.fetchReportSummarySourceData(filter);
     return this.reportBuilder.buildReportSummary(sourceData);
   }
 
-  async getReportSection<K extends AnalysisReportSectionKey>(
+  async getReportCapabilities(_filter: { limit?: number; page?: number } = {}) {
+    return this.reportBuilder.getCapabilities();
+  }
+
+  async getReportOverview(filter: { limit?: number; page?: number } = {}) {
+    return this.getReportSection("overview", filter);
+  }
+
+  async getReportSources(filter: { limit?: number; page?: number } = {}) {
+    return this.getReportSection("sources", filter);
+  }
+
+  async getReportTimeline(filter: { limit?: number; page?: number } = {}) {
+    return this.getReportSection("timeline", filter);
+  }
+
+  async getReportFiles(filter: { limit?: number; page?: number } = {}) {
+    return this.getReportSection("files", filter);
+  }
+
+  async getReportStatusHistory(filter: { limit?: number; page?: number } = {}) {
+    return this.getReportSection("statusHistory", filter);
+  }
+
+  async getReportRenameHistory(filter: { limit?: number; page?: number } = {}) {
+    return this.getReportSection("renameHistory", filter);
+  }
+
+  async getReportProcessReads(filter: { limit?: number; page?: number } = {}) {
+    return this.getReportSection("processReads", filter);
+  }
+
+  async getReportOperations(filter: { limit?: number; page?: number } = {}) {
+    return this.getReportSection("operations", filter);
+  }
+
+  async getReportDiagram(filter: { limit?: number; page?: number } = {}) {
+    return this.getReportSection("diagramData", filter);
+  }
+
+  async getReportChains(filter: { limit?: number; page?: number } = {}) {
+    return this.getReportSection("chains", filter);
+  }
+
+  async getReportNotices(_filter: { limit?: number; page?: number } = {}) {
+    return this.reportBuilder.getNotices();
+  }
+
+  private async getReportSection<K extends AnalysisReportSectionKey>(
     section: K,
     filter: { limit?: number; page?: number } = {},
   ): Promise<AnalysisReportResult[K]> {
-    const sourceData = await this.queryService.fetchReportSourceData({
-      ...filter,
-      paginationTarget: section === "sources" ? "sources" : "files",
-    });
+    if (section === "capabilities") {
+      return this.reportBuilder.getCapabilities() as AnalysisReportResult[K];
+    }
+
+    if (section === "notices") {
+      return this.reportBuilder.getNotices() as AnalysisReportResult[K];
+    }
+
+    const sourceData = await this.queryService.fetchReportSectionSourceData(section, filter);
 
     return this.reportBuilder.buildReportSection(sourceData, section);
   }

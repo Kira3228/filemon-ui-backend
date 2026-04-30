@@ -39,14 +39,26 @@ export class AnalysisReportBuilderService {
     });
   }
 
+  getCapabilities(): AnalysisReportResult["capabilities"] {
+    return {
+      hasFileEvents: true,
+      hasFileStatuses: true,
+      hasDiagram: false,
+    };
+  }
+
+  getNotices(): AnalysisReportResult["notices"] {
+    return [];
+  }
+
   buildReportSummary(input: AnalysisReportSourceData): AnalysisReportSummary {
     const context = this.createBuildContext(input);
 
     return {
       generatedAt: input.generatedAt,
-      capabilities: context.getCapabilities(),
+      capabilities: this.getCapabilities(),
       overview: context.getOverview(),
-      notices: context.getNotices(),
+      notices: this.getNotices(),
     };
   }
 
@@ -225,11 +237,7 @@ export class AnalysisReportBuilderService {
     };
 
     return {
-      getCapabilities: (): AnalysisReportResult["capabilities"] => ({
-        hasFileEvents: true,
-        hasFileStatuses: true,
-        hasDiagram: false,
-      }),
+      getCapabilities: () => this.getCapabilities(),
       getOverview: () => buildOverview(input, getSources().length),
       getSources,
       getTimelineAndOperations,
@@ -239,7 +247,7 @@ export class AnalysisReportBuilderService {
       getProcessReads,
       getDiagramData,
       getChains,
-      getNotices: (): AnalysisReportResult["notices"] => [],
+      getNotices: () => this.getNotices(),
     };
   }
 
