@@ -1,4 +1,5 @@
 import { inject, injectable } from "tsyringe";
+import { AnalysisFileRow } from "../analysis/analysis.types";
 import { FileRepositoryToken } from "../constants/tokens";
 import { Repository } from "typeorm";
 import { File } from "../entities";
@@ -8,8 +9,9 @@ export class FilesReadModel {
   constructor(@inject(FileRepositoryToken) private readonly fileRepository: Repository<File>) {
 
   }
-  private async findAllFiles() {
-    const filesQuery = await this.fileRepository
+
+  private buildFilesQuery() {
+    return this.fileRepository
       .createQueryBuilder("f")
       .leftJoin("f.filesystem", "fs")
       .leftJoin("f.originProcessVersion", "opv")
@@ -26,18 +28,23 @@ export class FilesReadModel {
         "f.inoGen as inode",
       ])
       .orderBy("f.tracking_started_at", "DESC")
-      .addOrderBy("f.id", "DESC")
-
-    return filesQuery;
+      .addOrderBy("f.id", "DESC");
   }
 
-  async findRootFiles(query: { page?: number, limit?: number } = {}) {
-    const page = Math.max()
-    const limit = Math.max()
+  async findAllFiles(): Promise<AnalysisFileRow[]> {
+    return this.buildFilesQuery().getRawMany() as Promise<AnalysisFileRow[]>;
+  }
+
+  async findRootFiles(query: { page?: number, limit?: number } = {}): Promise<AnalysisFileRow[]> {
+    const page = Math.max(1, Number(query.page) || 1);
+    const limit = Math.max(1, Math.min(Number(query.limit) || 250, 1000));
     const offset = (page - 1) * limit;
-    const files = (await this.findAllFiles()).limit(limit).offset(offset).getMany()
-    return files
+
+    return this.buildFilesQuery()
+      .where("opv.id IS NULL")
+      .limit(limit)
+      .offset(offset)
+      .getRawMany() as Promise<AnalysisFileRow[]>;
   }
 }
-
 

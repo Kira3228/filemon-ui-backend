@@ -16,6 +16,7 @@ import { DatabaseSettingsController } from "./database/database-settings.control
 import { Connection } from "typeorm";
 import { InjectionToken } from "tsyringe";
 import { repositoryTokens } from "./repository-tokens";
+import { SourcesController } from "./sources/sources.controller";
 
 EventEmitter.defaultMaxListeners = 15;
 
@@ -92,6 +93,7 @@ async function bootstrap() {
         FileController,
         AnalysisController,
         DatabaseSettingsController,
+        SourcesController
     ]
 
     for (const ControllerClass of controllers) {

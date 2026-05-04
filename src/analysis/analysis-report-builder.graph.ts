@@ -1,3 +1,4 @@
+import { splitLast } from "../shared/utils/split-last";
 import { AnalysisNormalizerService } from "./analysis-normalizer.service";
 import { toFileLinks } from "./analysis-report-builder.mappers";
 import type {
@@ -90,7 +91,7 @@ export const buildFileItems = ({
     return {
       id: file.id,
       fileId: file.id,
-      name: normalizer.getFileName(file.full_path),
+      name: splitLast(file.full_path),
       path: file.full_path,
       pathHistory: normalizer.buildPathHistory(file.full_path, renameRowsByFile.get(file.id) || []),
       filesystem: file.filesystem_uuid,

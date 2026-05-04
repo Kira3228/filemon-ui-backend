@@ -1,15 +1,20 @@
-import { inject } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 import { FileEventsRepositoryToken } from "../constants/tokens";
 import { Repository } from "typeorm";
 import { FileEvent } from "../entities";
+import { AnalysisFileEventRow } from "../analysis/analysis.types";
 
-
+@injectable()
 export class FileEventRowReadModel {
-  constructor(@inject(FileEventsRepositoryToken) private readonly fileEventRepository: Repository<FileEvent>) { }
-  private async findAllFileEvents() {
-    const events = await this.fileEventRepository
+  constructor(
+    @inject(FileEventsRepositoryToken)
+    private readonly fileEventRepository: Repository<FileEvent>,
+  ) { }
+
+  private buildFileEventsQuery() {
+    return this.fileEventRepository
       .createQueryBuilder("fe")
-      .leftJoin("fe.files", "file")
+      .leftJoin("fe.file", "file")
       .select([
         "fe.id as id",
         "file.id as file_id",
@@ -18,13 +23,16 @@ export class FileEventRowReadModel {
         "fe.details as details",
       ])
       .orderBy("fe.created_at", "DESC")
-      .addOrderBy("fe.id", "DESC")
-
-    return events
+      .addOrderBy("fe.id", "DESC");
   }
 
-  async findFileEvents() {
-    const events = (await this.findAllFileEvents()).getMany()
-    return events
+  async findFileEventsByFileIds(fileIds: number[]): Promise<AnalysisFileEventRow[]> {
+    if (!fileIds.length) {
+      return [];
+    }
+
+    return this.buildFileEventsQuery()
+      .where("file.id IN (:...fileIds)", { fileIds })
+      .getRawMany() as Promise<AnalysisFileEventRow[]>;
   }
 }

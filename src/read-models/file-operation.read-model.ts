@@ -1,21 +1,23 @@
-import { inject } from "tsyringe";
+import { inject, injectable } from "tsyringe";
+import { AnalysisOperationRow } from "../analysis/analysis.types";
 import { FileReadRepositoryToken, FileWriteRepositoryToken } from "../constants/tokens";
 import { Repository } from "typeorm";
 import { FileRead, FileWrite } from "../entities";
 
+@injectable()
 export class FileOperationReadModel {
   constructor(
     @inject(FileReadRepositoryToken) private readonly fileReadRepository: Repository<FileRead>,
     @inject(FileWriteRepositoryToken) private readonly fileWriteRepository: Repository<FileWrite>
   ) { }
 
-  private async findAllFileOperation(operationType: "read" | "write") {
+  private buildFileOperationQuery(operationType: "read" | "write") {
     const repository =
       operationType === "read" ? this.fileReadRepository : this.fileWriteRepository;
     const entity = operationType === "read" ? FileRead : FileWrite;
     const alias: "fr" | "fw" = operationType === "read" ? "fr" : "fw";
 
-    const result = await repository.manager
+    return repository.manager
       .createQueryBuilder(entity, alias)
       .leftJoin(`${alias}.file`, "file")
       .leftJoin("file.filesystem", "fs")
@@ -46,15 +48,23 @@ export class FileOperationReadModel {
         "fv.depth as file_version_depth",
       ])
       .orderBy(`${alias}.created_at`, "DESC")
-      .addOrderBy(`${alias}.file_id`, "DESC")
-
-    return result;
+      .addOrderBy(`${alias}.file_id`, "DESC");
   }
 
-  async findFileOperation(operationtype: "read" | "write") {
-    const operation = (await this.findAllFileOperation(operationtype)).getMany()
-
-    return operation
+  async findFileOperation(operationType: "read" | "write"): Promise<AnalysisOperationRow[]> {
+    return this.buildFileOperationQuery(operationType).getRawMany() as Promise<AnalysisOperationRow[]>;
   }
 
+  async findFileOperationByFileIds(
+    operationType: "read" | "write",
+    fileIds: number[],
+  ): Promise<AnalysisOperationRow[]> {
+    if (!fileIds.length) {
+      return [];
+    }
+
+    return this.buildFileOperationQuery(operationType)
+      .where(`file.id IN (:...fileIds)`, { fileIds })
+      .getRawMany() as Promise<AnalysisOperationRow[]>;
+  }
 }

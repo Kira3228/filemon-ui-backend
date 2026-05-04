@@ -1,3 +1,4 @@
+import { splitLast } from "../shared/utils/split-last";
 import { AnalysisNormalizerService } from "./analysis-normalizer.service";
 import type {
   AnalysisFileRow,
@@ -64,7 +65,7 @@ export const buildRenameHistory = (
       return {
         id: row.id,
         fileId: row.fileId,
-        fileName: normalizer.getFileName(file?.full_path),
+        fileName: splitLast(file?.full_path),
         eventType: row.kind,
         eventLabel: row.label,
         oldPath: row.oldPath,

@@ -8,56 +8,19 @@ import {
   Nullable,
   SortableValue,
 } from "./analysis.types";
+import { splitLast } from "../shared/utils/split-last";
 
 @injectable()
 export class AnalysisNormalizerService {
   formatProcessDisplayName(executablePath?: Nullable<string>, pid?: Nullable<number>, fallback = "proc") {
-    const executable = this.getFileName(executablePath || fallback);
+    const executable = splitLast(executablePath || fallback);
     if (pid !== null && pid !== undefined) {
       return `${executable} (PID ${pid})`;
     }
     return executable;
   }
 
-  normalizeFileEvent(
-    row: AnalysisFileEventRow,
-    filesById: Map<number, AnalysisFilePathRef>,
-  ): AnalysisNormalizedFileEvent | null {
-    let details: Record<string, unknown> = {};
-    try {
-      details = JSON.parse(row.details || "{}") as Record<string, unknown>;
-    } catch {
-      details = {};
-    }
 
-    const oldPath = this.getStringDetail(details, "old_full_path", "oldPath");
-    const newPath = this.getStringDetail(details, "new_full_path", "newPath");
-    if (!oldPath && !newPath) return null;
-
-    let kind: AnalysisNormalizedFileEvent["kind"] = "RENAME";
-    let label = "Переименован";
-    const isDeleteEvent = String(row.event) === "1" || (!newPath && !!oldPath);
-    if (isDeleteEvent) {
-      kind = "DELETE";
-      label = "Удален";
-    } else if (oldPath && newPath && this.getDirName(oldPath) !== this.getDirName(newPath)) {
-      kind = this.getFileName(oldPath) !== this.getFileName(newPath) ? "MOVE_RENAME" : "MOVE";
-      label = kind === "MOVE_RENAME" ? "Перемещен и переименован" : "Перемещен";
-    }
-
-    return {
-      id: row.id,
-      fileId: row.file_id,
-      kind,
-      label,
-      oldPath,
-      newPath,
-      outOfScope: Boolean(details.out_of_scope),
-      details,
-      createdAt: row.created_at,
-      currentPath: filesById.get(row.file_id)?.full_path || newPath || oldPath,
-    };
-  }
 
   normalizeExportCell(value: string | number | boolean | null | undefined) {
     if (value === null || value === undefined) { return ""; }
@@ -71,6 +34,10 @@ export class AnalysisNormalizerService {
       .replace(/^_+|_+$/g, "");
 
     return normalized || "table_export";
+  }
+
+  getFileName(value?: Nullable<string>) {
+    return splitLast(value);
   }
 
   buildPathHistory(currentPath: string, renameRows: AnalysisNormalizedFileEvent[]) {
@@ -155,26 +122,13 @@ export class AnalysisNormalizerService {
     return {
       id: file.id,
       fileId: file.id,
-      name: this.getFileName(file.full_path),
+      name: splitLast(file.full_path),
       path: file.full_path,
     };
   }
 
-  getFileName(value?: Nullable<string>) {
-    const text = String(value || "").trim();
-    if (!text) return "-";
-    const parts = text.split(/[\\/]/).filter(Boolean);
-    return parts[parts.length - 1] || text;
-  }
 
-  getDirName(value?: Nullable<string>) {
-    const text = String(value || "").trim();
-    if (!text) return "";
-    const normalized = text.replace(/[\\/]+$/, "");
-    const parts = normalized.split(/[\\/]/);
-    parts.pop();
-    return parts.join("/");
-  }
+
 
   formatStatus(rawStatus?: Nullable<string | number>) {
     const normalizedStatus =
@@ -225,15 +179,5 @@ export class AnalysisNormalizerService {
       return fallbackA > fallbackB ? 1 : -1;
     }
     return aValue > bValue ? 1 : -1;
-  }
-
-  private getStringDetail(details: Record<string, unknown>, ...keys: string[]) {
-    for (const key of keys) {
-      const value = details[key];
-      if (typeof value === "string" && value.trim()) {
-        return value;
-      }
-    }
-    return null;
   }
 }

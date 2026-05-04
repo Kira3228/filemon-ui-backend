@@ -1,3 +1,4 @@
+import { normalizeFileEvent } from "../sources/helpers/normalize-file-event";
 import { AnalysisNormalizerService } from "./analysis-normalizer.service";
 import { parseManualStatusEvent } from "./analysis-report-builder.mappers";
 import type {
@@ -243,7 +244,7 @@ export const buildAnalysisReportIndexes = (
 
   const normalizedRenameRows: AnalysisNormalizedFileEvent[] = [];
   for (const row of input.fileEventRows) {
-    const normalized = normalizer.normalizeFileEvent(row, filesById as Map<number, AnalysisFilePathRef>);
+    const normalized = normalizeFileEvent(row, filesById as Map<number, AnalysisFilePathRef>);
     if (normalized) {
       normalizedRenameRows.push(normalized);
     }
