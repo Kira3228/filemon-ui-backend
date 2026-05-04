@@ -1,6 +1,6 @@
 import { InjectionToken } from "tsyringe";
 import { EventService } from "../event/event.service";
-import { File, FileRead, FileVersion, FileWrite } from "../entities";
+import { File, FileEvent, FileRead, FileVersion, FileWrite } from "../entities";
 import { Repository } from "typeorm";
 import { FileManagementService } from "../file-management/file-management.service";
 
@@ -21,3 +21,6 @@ export const FileWriteRepositoryToken: InjectionToken<Repository<FileWrite>> =
 
 export const FileVersionRepositoryToken: InjectionToken<Repository<FileVersion>> =
   "FileVersionRepositoryToken";
+
+export const FileEventsRepositoryToken: InjectionToken<Repository<FileEvent>> =
+  "FileEventsRepositoryToken";

@@ -34,7 +34,9 @@ export class AnalysisSourcesService {
     return fileItems
       .filter((item) => item.sourceIds.length === 1 && item.sourceIds[0] === item.id)
       .map((item) => {
+        
         const readers = readsByFile.get(item.id) || [];
+
         const descendantIds = resolveDescendants(item.id);
         const relatedFileIds = [item.id, ...descendantIds];
         const processLabels = new Set<string>();

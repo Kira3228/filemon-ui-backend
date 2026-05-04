@@ -12,6 +12,10 @@ import {
   IExportTablePayload,
 } from "./analysis.types";
 import { AnalysisService } from "./analysis.service";
+import { FileVersionService } from "./file-version.service";
+import { FileOperationService } from "./file-operation.service";
+import { FileEventsService } from "./file-events.service";
+import { FileService } from "./file.service";
 
 type AnalysisReportQuery = {
   limit?: string;
@@ -25,7 +29,13 @@ type AnalysisRouteParams = {
 @Controller(`/analysis`)
 @injectable()
 export class AnalysisController {
-  constructor(private readonly analysisService: AnalysisService) { }
+  constructor(
+    private readonly analysisService: AnalysisService,
+    private readonly fileVersionService: FileVersionService,
+    private readonly fileOperationService: FileOperationService,
+    private readonly fileEventsService: FileEventsService,
+    private readonly fileService: FileService
+  ) { }
 
   @Get(`/report`)
   async getReport(
@@ -224,8 +234,6 @@ export class AnalysisController {
     res.status(200).json(result);
   }
 
-
-
   @Post(`/export-table`)
   async exportTable(
     req: Request<Record<string, never>, unknown, IExportTablePayload>,
@@ -263,5 +271,17 @@ export class AnalysisController {
       .toLowerCase();
 
     return safeExtension ? `${safeName}.${safeExtension}` : safeName;
+  }
+
+
+  @Get(`/test`)
+  async test(
+    req: Request,
+    res: Response,
+  ) {
+    const result = await this.fileService.getFiles()
+
+    res.set("Cache-Control", "no-store");
+    res.status(200).json(result);
   }
 }

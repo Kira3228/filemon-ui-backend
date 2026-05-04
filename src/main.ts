@@ -8,16 +8,15 @@ import { errorHandler } from "./middleware/error-handler";
 import { PREFIX_META, ROUTE_META, RouteInfo } from "./shared/utils/routing";
 import { asyncHandler, RouteHandler } from "./shared/utils/async-handler";
 import { FileController } from "./event/event.controller";
-import { FileManagementServiceToken, FileRepositoryToken, FileReadRepositoryToken, FileWriteRepositoryToken, FileVersionRepositoryToken } from "./constants/tokens";
 import { EventService } from "./event/event.service";
-import { FileMamagementContoller } from "./file-management/file-management.controller";
 import { FileManagementService } from "./file-management/file-management.service";
 import { AnalysisController } from "./analysis/analysis.controller";
 import { AppDatabaseService } from "./database/app-database.service";
 import { DatabaseSettingsController } from "./database/database-settings.controller";
 import { Connection } from "typeorm";
 import { InjectionToken } from "tsyringe";
-import { File, FileRead, FileVersion, FileWrite } from "./entities";
+import { repositoryTokens } from "./repository-tokens";
+
 EventEmitter.defaultMaxListeners = 15;
 
 type ControllerClass = new (...args: never[]) => object;
@@ -79,12 +78,7 @@ async function bootstrap() {
     app.use(cors())
 
     const connection = await databaseService.getConnection();
-    registerRepositories(connection, [
-        { token: FileRepositoryToken, entity: File },
-        { token: FileReadRepositoryToken, entity: FileRead },
-        { token: FileWriteRepositoryToken, entity: FileWrite },
-        { token: FileVersionRepositoryToken, entity: FileVersion },
-    ]);
+    registerRepositories(connection, repositoryTokens);
 
     const providers: ProviderClass[] = [
         EventService,
@@ -93,11 +87,10 @@ async function bootstrap() {
     providers.forEach((provider) => {
         container.registerSingleton(provider);
     });
-    container.registerSingleton(FileManagementServiceToken, FileManagementService);
+
 
     const controllers: ControllerClass[] = [
         FileController,
-        FileMamagementContoller,
         AnalysisController,
         DatabaseSettingsController,
     ]

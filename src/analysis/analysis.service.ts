@@ -7,6 +7,7 @@ import {
   AnalysisReportResult,
   AnalysisReportSectionKey,
   AnalysisReportSummary,
+  AnalysisSourceItem,
   IExportTablePayload,
 } from "./analysis.types";
 import { UpdateFileMonitoringStatusDto } from "./dto/update-file-monitoring-status.dto";
@@ -95,7 +96,25 @@ export class AnalysisService {
 
     return this.reportBuilder.buildReportSection(sourceData, section);
   }
+  //===================
+  async getTest<K extends AnalysisReportSectionKey>(
+    section: K,
+    filter: { limit?: number; page?: number } = {},
+  ) {
+    if (section === "capabilities") {
+      return this.reportBuilder.getCapabilities() as AnalysisReportResult[K];
+    }
 
+    if (section === "notices") {
+      return this.reportBuilder.getNotices() as AnalysisReportResult[K];
+    }
+
+    const sourceData = await this.queryService.fetchReportSectionSourceData(section, filter);
+
+    return sourceData
+    // return this.reportBuilder.buildReportSection(sourceData, section);
+  }
+  //===================
   async updateFileMonitoringStatus(
     fileId: number,
     payload: UpdateFileMonitoringStatusDto,
@@ -106,4 +125,5 @@ export class AnalysisService {
   async exportTable(payload: IExportTablePayload) {
     return this.exportService.exportTable(payload);
   }
+  /*===================================================== */
 }

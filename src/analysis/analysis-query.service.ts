@@ -243,6 +243,7 @@ export class AnalysisQueryService {
     filter: AnalysisQueryFilter,
     paginateFiles: boolean,
   ): Promise<AnalysisLoadContext> {
+
     const pagination = this.normalizeFilter(filter);
     const fileRepo = await this.databaseService.getRepository(File);
     const manager = fileRepo.manager;
