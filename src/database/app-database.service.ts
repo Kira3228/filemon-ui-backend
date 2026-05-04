@@ -8,6 +8,7 @@ import {
   Connection,
   ConnectionOptions,
   EntityTarget,
+  ObjectLiteral,
   Repository,
   createConnection,
 } from "typeorm";
@@ -26,6 +27,7 @@ import {
 } from "../entities";
 import { HttpError, ValidationError } from "../errors/http-errors";
 import { ensureManualFileStatusEventsTable, validateSchemaSql } from "./schema";
+import { log } from "console";
 
 type PersistedDatabaseConfig = {
   databasePath: string;
@@ -119,7 +121,9 @@ export class AppDatabaseService {
     return this.connection;
   }
 
-  async getRepository<Entity>(entity: EntityTarget<Entity>): Promise<Repository<Entity>> {
+  async getRepository<Entity extends ObjectLiteral>(
+    entity: EntityTarget<Entity>,
+  ): Promise<Repository<Entity>> {
     const connection = await this.getConnection();
     return connection.getRepository(entity);
   }

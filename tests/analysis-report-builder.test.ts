@@ -484,6 +484,24 @@ const testUsesAllPreviousProcessVersionsAsSources = () => {
   assert.deepEqual(report.chains["4"].sourceIds, [1, 2, 3]);
 };
 
+const testBuildsReportSectionsConsistently = () => {
+  const builder = createBuilder();
+  const fixture = createFixture();
+  const report = builder.buildReport(fixture);
+
+  assert.deepEqual(builder.buildReportSection(fixture, "overview"), report.overview);
+  assert.deepEqual(builder.buildReportSection(fixture, "files"), report.files);
+  assert.deepEqual(builder.buildReportSection(fixture, "timeline"), report.timeline);
+  assert.deepEqual(builder.buildReportSection(fixture, "operations"), report.operations);
+  assert.deepEqual(builder.buildReportSection(fixture, "chains"), report.chains);
+  assert.deepEqual(builder.buildReportSummary(fixture), {
+    generatedAt: report.generatedAt,
+    capabilities: report.capabilities,
+    overview: report.overview,
+    notices: report.notices,
+  });
+};
+
 export const runAnalysisReportBuilderTests = async () => {
   await runCase(
     "AnalysisReportBuilderService builds a consistent report from source rows",
@@ -492,5 +510,9 @@ export const runAnalysisReportBuilderTests = async () => {
   await runCase(
     "AnalysisReportBuilderService expands sources through the full process version history",
     testUsesAllPreviousProcessVersionsAsSources,
+  );
+  await runCase(
+    "AnalysisReportBuilderService builds report sections consistently",
+    testBuildsReportSectionsConsistently,
   );
 };

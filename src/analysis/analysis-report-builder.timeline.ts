@@ -39,7 +39,6 @@ export const buildTimelineAndOperations = ({
   inputLimit,
   normalizer,
   normalizedRenameRows,
-  processVersionsIndex,
   reads,
   resolveRootSourceIds,
   statusHistory,

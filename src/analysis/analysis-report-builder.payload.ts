@@ -1,9 +1,10 @@
 import { AnalysisNormalizerService } from "./analysis-normalizer.service";
-import { buildProcessReads, buildRenameHistory, buildSourceRoots, buildStatusHistory } from "./analysis-report-builder.collections";
+import { buildProcessReads, buildRenameHistory, buildStatusHistory } from "./analysis-report-builder.collections";
 import { buildFileItems, createDescendantsResolver, createRootSourceResolver } from "./analysis-report-builder.graph";
 import { buildAnalysisReportResult } from "./analysis-report-builder.result";
 import { buildChains, buildDiagramData, buildOverview } from "./analysis-report-builder.sections";
 import { buildTimelineAndOperations } from "./analysis-report-builder.timeline";
+import { AnalysisSourcesService } from "./analysis-sources.service";
 import type { AnalysisReportIndexes } from "./analysis-report-builder.indexes";
 import type {
   AnalysisFileItem,
@@ -16,6 +17,7 @@ interface BuildAnalysisReportPayloadOptions {
   indexes: AnalysisReportIndexes;
   input: AnalysisReportSourceData;
   normalizer: AnalysisNormalizerService;
+  sourcesService: AnalysisSourcesService;
   trackingStatus: number;
 }
 
@@ -24,6 +26,7 @@ export const buildAnalysisReportPayload = ({
   indexes,
   input,
   normalizer,
+  sourcesService,
   trackingStatus,
 }: BuildAnalysisReportPayloadOptions): AnalysisReportResult => {
   const {
@@ -57,15 +60,14 @@ export const buildAnalysisReportPayload = ({
   });
   const fileItemsById = new Map<number, AnalysisFileItem>(fileItems.map((item) => [item.fileId, item] as const));
 
-  const sourceRoots = buildSourceRoots({
-    files: input.files,
+  const sourceRoots = sourcesService.buildSourceRoots({
     fileItems,
     fileItemsById,
-    filesById,
+    limit: input.limit,
     normalizer,
+    offset: input.offset,
     versionsByFile,
     readsByFile,
-    childrenByFile,
     resolveDescendants,
   });
 

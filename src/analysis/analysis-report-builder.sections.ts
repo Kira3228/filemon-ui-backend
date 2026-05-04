@@ -6,7 +6,6 @@ import type {
   AnalysisDiagramFileVersion,
   AnalysisDiagramOperation,
   AnalysisDiagramProcessVersion,
-  AnalysisFileItem,
   AnalysisFilePathRef,
   AnalysisFileRow,
   AnalysisFileVersionRow,

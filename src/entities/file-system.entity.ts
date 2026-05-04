@@ -4,11 +4,11 @@ import { File } from "./file.entity";
 @Entity("filesystems")
 export class Filesystem {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column({ unique: true })
-  uuid: string;
+  uuid!: string;
 
   @OneToMany(() => File, (file) => file.filesystem)
-  files: File[];
+  files!: File[];
 }

@@ -8,13 +8,18 @@ import {
 import { Controller, Get, Patch, Post } from "../shared/utils/routing";
 import {
   AnalysisReportResult,
+  AnalysisReportSummary,
   IExportTablePayload,
 } from "./analysis.types";
 import { AnalysisService } from "./analysis.service";
-import { log } from "console";
+import { FileVersionService } from "./file-version.service";
+import { FileOperationService } from "./file-operation.service";
+import { FileEventsService } from "./file-events.service";
+import { FileService } from "./file.service";
 
 type AnalysisReportQuery = {
   limit?: string;
+  page?: string;
 };
 
 type AnalysisRouteParams = {
@@ -24,7 +29,13 @@ type AnalysisRouteParams = {
 @Controller(`/analysis`)
 @injectable()
 export class AnalysisController {
-  constructor(private readonly analysisService: AnalysisService) { }
+  constructor(
+    private readonly analysisService: AnalysisService,
+    private readonly fileVersionService: FileVersionService,
+    private readonly fileOperationService: FileOperationService,
+    private readonly fileEventsService: FileEventsService,
+    private readonly fileService: FileService
+  ) { }
 
   @Get(`/report`)
   async getReport(
@@ -33,7 +44,192 @@ export class AnalysisController {
   ) {
     const result = await this.analysisService.getReport({
       limit: req.query.limit ? Number(req.query.limit) : undefined,
+      page: req.query.page ? Number(req.query.page) : undefined,
     });
+
+    res.set("Cache-Control", "no-store");
+    res.status(200).json(result);
+  }
+
+  @Get(`/report/capabilities`)
+  async getReportCapabilities(
+    req: Request<Record<string, never>, AnalysisReportResult["capabilities"], never, AnalysisReportQuery>,
+    res: Response<AnalysisReportResult["capabilities"]>,
+  ) {
+    const result = await this.analysisService.getReportCapabilities({
+      limit: req.query.limit ? Number(req.query.limit) : undefined,
+      page: req.query.page ? Number(req.query.page) : undefined,
+    });
+
+    res.set("Cache-Control", "no-store");
+    res.status(200).json(result);
+  }
+
+  @Get(`/report/summary`)
+  async getReportSummary(
+    req: Request<Record<string, never>, AnalysisReportSummary, never, AnalysisReportQuery>,
+    res: Response<AnalysisReportSummary>,
+  ) {
+    const result = await this.analysisService.getReportSummary({
+      limit: req.query.limit ? Number(req.query.limit) : undefined,
+      page: req.query.page ? Number(req.query.page) : undefined,
+    });
+
+    res.set("Cache-Control", "no-store");
+    res.status(200).json(result);
+  }
+
+  @Get(`/report/overview`)
+  async getReportOverview(
+    req: Request<Record<string, never>, AnalysisReportResult["overview"], never, AnalysisReportQuery>,
+    res: Response<AnalysisReportResult["overview"]>,
+  ) {
+    const result = await this.analysisService.getReportOverview({
+      limit: req.query.limit ? Number(req.query.limit) : undefined,
+      page: req.query.page ? Number(req.query.page) : undefined,
+    });
+
+    res.set("Cache-Control", "no-store");
+    res.status(200).json(result);
+  }
+
+  @Get(`/report/sources`)
+  async getReportSources(
+    req: Request<Record<string, never>, AnalysisReportResult["sources"], never, AnalysisReportQuery>,
+    res: Response<AnalysisReportResult["sources"]>,
+  ) {
+    const result = await this.analysisService.getReportSources({
+      limit: req.query.limit ? Number(req.query.limit) : undefined,
+      page: req.query.page ? Number(req.query.page) : undefined,
+    });
+
+    res.set("Cache-Control", "no-store");
+    res.status(200).json(result);
+  }
+
+  @Get(`/report/timeline`)
+  async getReportTimeline(
+    req: Request<Record<string, never>, AnalysisReportResult["timeline"], never, AnalysisReportQuery>,
+    res: Response<AnalysisReportResult["timeline"]>,
+  ) {
+    const result = await this.analysisService.getReportTimeline({
+      limit: req.query.limit ? Number(req.query.limit) : undefined,
+      page: req.query.page ? Number(req.query.page) : undefined,
+    });
+
+    res.set("Cache-Control", "no-store");
+    res.status(200).json(result);
+  }
+
+  @Get(`/report/files`)
+  async getReportFiles(
+    req: Request<Record<string, never>, AnalysisReportResult["files"], never, AnalysisReportQuery>,
+    res: Response<AnalysisReportResult["files"]>,
+  ) {
+    const result = await this.analysisService.getReportFiles({
+      limit: req.query.limit ? Number(req.query.limit) : undefined,
+      page: req.query.page ? Number(req.query.page) : undefined,
+    });
+
+    res.set("Cache-Control", "no-store");
+    res.status(200).json(result);
+  }
+
+  @Get(`/report/status-history`)
+  async getReportStatusHistory(
+    req: Request<Record<string, never>, AnalysisReportResult["statusHistory"], never, AnalysisReportQuery>,
+    res: Response<AnalysisReportResult["statusHistory"]>,
+  ) {
+    const result = await this.analysisService.getReportStatusHistory({
+      limit: req.query.limit ? Number(req.query.limit) : undefined,
+      page: req.query.page ? Number(req.query.page) : undefined,
+    });
+
+    res.set("Cache-Control", "no-store");
+    res.status(200).json(result);
+  }
+
+  @Get(`/report/rename-history`)
+  async getReportRenameHistory(
+    req: Request<Record<string, never>, AnalysisReportResult["renameHistory"], never, AnalysisReportQuery>,
+    res: Response<AnalysisReportResult["renameHistory"]>,
+  ) {
+    const result = await this.analysisService.getReportRenameHistory({
+      limit: req.query.limit ? Number(req.query.limit) : undefined,
+      page: req.query.page ? Number(req.query.page) : undefined,
+    });
+
+    res.set("Cache-Control", "no-store");
+    res.status(200).json(result);
+  }
+
+  @Get(`/report/process-reads`)
+  async getReportProcessReads(
+    req: Request<Record<string, never>, AnalysisReportResult["processReads"], never, AnalysisReportQuery>,
+    res: Response<AnalysisReportResult["processReads"]>,
+  ) {
+    const result = await this.analysisService.getReportProcessReads({
+      limit: req.query.limit ? Number(req.query.limit) : undefined,
+      page: req.query.page ? Number(req.query.page) : undefined,
+    });
+
+    res.set("Cache-Control", "no-store");
+    res.status(200).json(result);
+  }
+
+  @Get(`/report/operations`)
+  async getReportOperations(
+    req: Request<Record<string, never>, AnalysisReportResult["operations"], never, AnalysisReportQuery>,
+    res: Response<AnalysisReportResult["operations"]>,
+  ) {
+    const result = await this.analysisService.getReportOperations({
+      limit: req.query.limit ? Number(req.query.limit) : undefined,
+      page: req.query.page ? Number(req.query.page) : undefined,
+    });
+
+    res.set("Cache-Control", "no-store");
+    res.status(200).json(result);
+  }
+
+  @Get(`/report/diagram`)
+  async getReportDiagram(
+    req: Request<Record<string, never>, AnalysisReportResult["diagramData"], never, AnalysisReportQuery>,
+    res: Response<AnalysisReportResult["diagramData"]>,
+  ) {
+    const result = await this.analysisService.getReportDiagram({
+      limit: req.query.limit ? Number(req.query.limit) : undefined,
+      page: req.query.page ? Number(req.query.page) : undefined,
+    });
+
+    res.set("Cache-Control", "no-store");
+    res.status(200).json(result);
+  }
+
+  @Get(`/report/chains`)
+  async getReportChains(
+    req: Request<Record<string, never>, AnalysisReportResult["chains"], never, AnalysisReportQuery>,
+    res: Response<AnalysisReportResult["chains"]>,
+  ) {
+
+    const result = await this.analysisService.getReportChains({
+      limit: req.query.limit ? Number(req.query.limit) : undefined,
+      page: req.query.page ? Number(req.query.page) : undefined,
+    });
+
+    res.set("Cache-Control", "no-store");
+    res.status(200).json(result);
+  }
+
+  @Get(`/report/notices`)
+  async getReportNotices(
+    req: Request<Record<string, never>, AnalysisReportResult["notices"], never, AnalysisReportQuery>,
+    res: Response<AnalysisReportResult["notices"]>,
+  ) {
+    const result = await this.analysisService.getReportNotices({
+      limit: req.query.limit ? Number(req.query.limit) : undefined,
+      page: req.query.page ? Number(req.query.page) : undefined,
+    });
+
     res.set("Cache-Control", "no-store");
     res.status(200).json(result);
   }
@@ -75,5 +271,17 @@ export class AnalysisController {
       .toLowerCase();
 
     return safeExtension ? `${safeName}.${safeExtension}` : safeName;
+  }
+
+
+  @Get(`/test`)
+  async test(
+    req: Request,
+    res: Response,
+  ) {
+    const result = await this.fileService.getFiles()
+
+    res.set("Cache-Control", "no-store");
+    res.status(200).json(result);
   }
 }

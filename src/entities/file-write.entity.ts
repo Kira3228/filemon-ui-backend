@@ -9,26 +9,26 @@ import { File } from "./file.entity";
 @Entity("file_writes")
 export class FileWrite {
   @PrimaryColumn()
-  file_id: number;
+  file_id!: number;
 
   @PrimaryColumn()
-  process_version_id: number;
+  process_version_id!: number;
 
   @ManyToOne(() => File)
   @JoinColumn({ name: "file_id" })
-  file: File;
+  file!: File;
 
   @Index("idx_file_writes_file_version")
   @ManyToOne(() => FileVersion, { nullable: true })
   @JoinColumn({ name: "file_version_id" })
-  fileVersion: FileVersion;
+  fileVersion!: FileVersion;
 
 
   @Index("idx_file_writes_process_version")
   @ManyToOne(() => ProcessVersion)
   @JoinColumn({ name: "process_version_id" })
-  processVersion: ProcessVersion;
+  processVersion!: ProcessVersion;
 
   @Column({ type: "datetime", name: "created_at" })
-  created_at: Date;
+  created_at!: Date;
 }

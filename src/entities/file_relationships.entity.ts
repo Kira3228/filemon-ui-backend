@@ -3,20 +3,20 @@ import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeor
 @Entity("file_relationships")
 export class FileRelationship {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column({ name: "parent_file_id" })
-  parentFileId: number;
+  parentFileId!: number;
 
   @Column({ name: "child_file_id" })
-  childFileId: number;
+  childFileId!: number;
 
   @Column({ name: "relationship_type", nullable: true })
-  relationshipType: string;
+  relationshipType!: string;
 
   @CreateDateColumn({ name: "created_at" })
-  createdAt: Date;
+  createdAt!: Date;
 
   @Column({ name: "process_version_id", nullable: true })
-  processVersionId: number;
+  processVersionId!: number;
 }

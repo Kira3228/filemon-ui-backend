@@ -7,38 +7,38 @@ import { OSUser } from "./os-user.entity";
 @Index("idx_processes_pid_exit", ["pid", "process_exit_time"])
 export class Process {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  pid: number;
+  pid!: number;
 
   @Column()
-  executable_path: string;
+  executable_path!: string;
 
   @Column({ type: "text", nullable: true })
-  arguments: string;
+  arguments!: string;
 
   @Column()
-  parent_pid: number;
+  parent_pid!: number;
 
   @ManyToOne(() => OSUser, (user) => user.processes)
   @JoinColumn({ name: "os_user_id" })
-  osUser: OSUser;
+  osUser!: OSUser;
 
   // убираем @Column() os_user_id
 
   @Column()
-  group_id: number;
+  group_id!: number;
 
   @Column({ type: "text", nullable: true })
-  environment: string;
+  environment!: string;
 
   @Column({ type: "datetime" })
-  process_start_time: Date;
+  process_start_time!: Date;
 
   @Column({ name: "details_source", type: "integer", default: 1 })
-  details_source: number;
+  details_source!: number;
 
   @Column({ type: "datetime", nullable: true })
-  process_exit_time: Date;
+  process_exit_time!: Date;
 } 

@@ -172,6 +172,8 @@ export interface AnalysisNormalizedFileEvent {
 export interface AnalysisReportSourceData {
   generatedAt: string;
   limit: number;
+  page: number;
+  offset: number;
   files: AnalysisFileRow[];
   fileVersions: AnalysisFileVersionRow[];
   processVersions: AnalysisProcessVersionRow[];
@@ -447,3 +449,24 @@ export interface AnalysisReportResult {
   chains: Record<string, AnalysisChainEntry>;
   notices: string[];
 }
+
+export type AnalysisReportSectionKey = keyof Pick<
+  AnalysisReportResult,
+  | "capabilities"
+  | "overview"
+  | "sources"
+  | "timeline"
+  | "files"
+  | "statusHistory"
+  | "renameHistory"
+  | "processReads"
+  | "operations"
+  | "diagramData"
+  | "chains"
+  | "notices"
+>;
+
+export type AnalysisReportSummary = Pick<
+  AnalysisReportResult,
+  "generatedAt" | "capabilities" | "overview" | "notices"
+>;

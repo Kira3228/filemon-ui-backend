@@ -1,5 +1,5 @@
 import { inject, injectable } from "tsyringe";
-import { Controller, Get, Patch, Post } from "../shared/utils/routing";
+import { Controller, Get, Post } from "../shared/utils/routing";
 import { EventService, } from "./event.service";
 import { Request, Response } from "express";
 import { NotFoundError } from "../errors/http-errors";
@@ -114,7 +114,7 @@ export class FileController {
   }
 
   @Post(`/generate`)
-  async generateMock(req: Request, res: Response) {
+  async generateMock(res: Response) {
     await this.eventService.seedDatabase()
     res.status(200).json({ status: `OK` })
   }
