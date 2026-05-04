@@ -10,18 +10,18 @@ import { File } from "./file.entity";
 @Entity("file_events")
 export class FileEvent {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @ManyToOne(() => File, { nullable: false })
   @JoinColumn({ name: "file_id" })
-  file: File;
+  file!: File;
 
   @Column({ type: "integer" })
-  event: number;
+  event!: number;
 
   @Column({ name: "created_at", type: "datetime" })
-  created_at: Date;
+  created_at!: Date;
 
   @Column({ type: "text" })
-  details: string;
+  details!: string;
 }

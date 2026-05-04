@@ -11,40 +11,40 @@ import { MonitoredFile } from "./monitored_file.entity";
 @Entity("processes")
 export class SystemProcess {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  pid: number;
+  pid!: number;
 
   @Column({ name: "executable_path" })
-  executablePath: string;
+  executablePath!: string;
 }
 
 @Entity("system_events")
 export class SystemEvent {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column({ name: "event_type" })
-  eventType: string;
+  eventType!: string;
 
   @Column({ name: "event_data", type: "text", nullable: true })
-  eventData: string;
+  eventData!: string;
 
   @Column({ nullable: true })
-  severity: string;
+  severity!: string;
 
   @Column({ nullable: true })
-  source: string;
+  source!: string;
 
   @CreateDateColumn()
-  timestamp: Date;
+  timestamp!: Date;
 
   @ManyToOne(() => MonitoredFile, { nullable: true })
   @JoinColumn({ name: "related_file_id" })
-  relatedFileId: MonitoredFile;
+  relatedFileId!: MonitoredFile;
 
   @ManyToOne(() => SystemProcess, { nullable: true })
   @JoinColumn({ name: "related_process_id" })
-  relatedProcessId: SystemProcess;
+  relatedProcessId!: SystemProcess;
 }

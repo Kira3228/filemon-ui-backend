@@ -8,6 +8,7 @@ import {
   Connection,
   ConnectionOptions,
   EntityTarget,
+  ObjectLiteral,
   Repository,
   createConnection,
 } from "typeorm";
@@ -120,7 +121,9 @@ export class AppDatabaseService {
     return this.connection;
   }
 
-  async getRepository<Entity>(entity: EntityTarget<Entity>): Promise<Repository<Entity>> {
+  async getRepository<Entity extends ObjectLiteral>(
+    entity: EntityTarget<Entity>,
+  ): Promise<Repository<Entity>> {
     const connection = await this.getConnection();
     return connection.getRepository(entity);
   }

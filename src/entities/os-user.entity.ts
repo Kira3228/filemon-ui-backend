@@ -4,29 +4,29 @@ import { Process } from "./process.entity";
 @Entity("os_users")
 export class OSUser {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column({ unique: true })
-  uid: number;
+  uid!: number;
 
   @Column()
-  gid: number;
+  gid!: number;
 
   @Column({ nullable: true })
-  username: string;
+  username!: string;
 
   @Column({ nullable: true })
-  home_directory: string;
+  home_directory!: string;
 
   @Column({ nullable: true })
-  shell: string;
+  shell!: string;
 
   @Column({ nullable: true })
-  full_name: string;
+  full_name!: string;
 
   @CreateDateColumn()
-  created_at: Date;
+  created_at!: Date;
 
   @OneToMany(() => Process, (p) => p.osUser)
-  processes: Process[];
+  processes!: Process[];
 }

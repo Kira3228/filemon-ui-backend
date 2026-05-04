@@ -10,15 +10,15 @@ import { File } from "./file.entity";
 @Entity("file_statuses")
 export class FileStatus {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @ManyToOne(() => File, { nullable: false })
   @JoinColumn({ name: "file_id" })
-  file: File;
+  file!: File;
 
   @Column({ type: "integer" })
-  status: number;
+  status!: number;
 
   @Column({ name: "created_at", type: "datetime" })
-  created_at: Date;
+  created_at!: Date;
 }

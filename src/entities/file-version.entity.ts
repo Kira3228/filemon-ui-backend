@@ -9,27 +9,27 @@ import { ProcessVersion } from "./process-version";
 @Unique(["file", "version_number"])
 export class FileVersion {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @ManyToOne(() => File, (file) => file.versions)
   @JoinColumn({ name: "file_id" })
-  file: File;
+  file!: File;
 
   // убираем @Column() file_id
 
   @Column()
-  version_number: number;
+  version_number!: number;
 
   @Index("idx_file_versions_origin_pv")
   @ManyToOne(() => ProcessVersion, { nullable: true }) // ← nullable: true
   @JoinColumn({ name: "origin_process_version_id" })
-  originProcessVersion: ProcessVersion;
+  originProcessVersion!: ProcessVersion | null;
 
   // убираем @Column() origin_process_version_id
 
   @Column({ nullable: true })
-  depth: number;
+  depth!: number | null;
 
   @CreateDateColumn()
-  created_at: Date;
+  created_at!: Date;
 }

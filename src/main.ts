@@ -19,10 +19,9 @@ import { repositoryTokens } from "./repository-tokens";
 
 EventEmitter.defaultMaxListeners = 15;
 
-type ControllerClass = new (...args: never[]) => object;
+type ControllerClass = new (...args: any[]) => object;
 type ProviderClass<T = unknown> = new (...args: any[]) => T;
-
-type ControllerInstance = Record<string, unknown>;
+type ControllerInstance = object;
 
 
 const registerRoute = (
@@ -30,7 +29,7 @@ const registerRoute = (
     route: RouteInfo,
     instance: ControllerInstance,
 ) => {
-    const routeHandler = instance[route.handler];
+    const routeHandler = (instance as Record<string, unknown>)[route.handler];
 
     if (typeof routeHandler !== "function") {
         throw new Error(`Route handler "${route.handler}" is not defined`);
@@ -121,5 +120,3 @@ bootstrap().catch(error => {
     console.error("Application startup failed:", error);
     process.exit(1);
 });
-
-

@@ -11,28 +11,28 @@ import { FileStatus } from "./file-status.entity";
 @Entity("manual_file_status_events")
 export class ManualFileStatusEvent {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @ManyToOne(() => File, { nullable: false })
   @JoinColumn({ name: "file_id" })
-  file: File;
+  file!: File;
 
   @ManyToOne(() => FileStatus, { nullable: true })
   @JoinColumn({ name: "status_history_id" })
-  statusHistory: FileStatus;
+  statusHistory!: FileStatus;
 
   @Column({ type: "text" })
-  action: string;
+  action!: string;
 
   @Column({ name: "previous_status", type: "integer" })
-  previous_status: number;
+  previous_status!: number;
 
   @Column({ name: "new_status", type: "integer" })
-  new_status: number;
+  new_status!: number;
 
   @Column({ name: "created_at", type: "datetime" })
-  created_at: Date;
+  created_at!: Date;
 
   @Column({ type: "text" })
-  details: string;
+  details!: string;
 }
