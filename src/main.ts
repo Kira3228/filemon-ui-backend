@@ -16,7 +16,10 @@ import { registerRepositories } from "./register-repositories";
 import { buildRouter, ControllerClass } from "./build-router";
 import { FilesController } from "./Files/files.controller";
 import { OperationController } from "./operation/operation.controller";
-import { EventsController } from "./events/events.controller";
+import { EventsController } from "./timeline/timeline.controller";
+import { StatusHistoryController } from "./status-history/status-history.controller";
+import { RenameHistoryController } from "./rename-history/rename-history.controller";
+import { ProcessReadsController } from "./process-reads/process-reads.controller";
 
 EventEmitter.defaultMaxListeners = 15;
 
@@ -59,7 +62,10 @@ async function bootstrap() {
         SourcesController,
         FilesController,
         OperationController,
-        EventsController
+        EventsController,
+        StatusHistoryController,
+        RenameHistoryController,
+        ProcessReadsController
     ]
 
     const v1Router = buildRouter(controllers)

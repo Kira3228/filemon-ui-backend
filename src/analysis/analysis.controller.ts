@@ -16,6 +16,7 @@ import { FileVersionService } from "./file-version.service";
 import { FileOperationService } from "./file-operation.service";
 import { FileEventsService } from "./file-events.service";
 import { FileService } from "./file.service";
+import { log } from "console";
 
 type AnalysisReportQuery = {
   limit?: string;

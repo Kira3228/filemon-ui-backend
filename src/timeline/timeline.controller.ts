@@ -1,7 +1,7 @@
 import { injectable } from "tsyringe";
 import { Controller, Get } from "../shared/utils/routing";
 import { Request, Response } from "express";
-import { EventsService } from "./events.service";
+import { EventsService } from "./timeline.service";
 
 @Controller(`/events`)
 @injectable()
