@@ -2,7 +2,6 @@ import { injectable } from "tsyringe";
 import {
   AnalysisFileItem,
   AnalysisFileRow,
-  AnalysisFileVersionRow,
   AnalysisNormalizedFileEvent,
   AnalysisSourceItem,
 } from "../analysis/analysis.types";
@@ -12,9 +11,9 @@ import { splitLast } from "../shared/utils/split-last";
 import { FileOperationReadModel } from "../read-models/file-operation.read-model";
 import { buildProcessLabel } from "../shared/utils/build-process-label";
 import { buildChildrenByFile, buildParentsByFile, createDescendantsResolver, createRootSourceResolver, groupFileEventsByFile, groupReadsByFile, groupVersionsByFile } from "./sources.graph";
-import { buildFileItem } from "./sources.mapper";
 import { FileEventRowReadModel } from "../read-models/file-event-row.read-model";
-import { normalizeFileEvent } from "./helpers/normalize-file-event";
+import { normalizeFileEvent } from "../shared/helpers/normalize-file-event";
+import { buildFileItem } from "../shared/helpers/build-file-item";
 
 @injectable()
 export class SourcesService {

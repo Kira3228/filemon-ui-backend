@@ -1,6 +1,6 @@
 import { InjectionToken } from "tsyringe"
-import { FileEventsRepositoryToken, FileManagementServiceToken, FileReadRepositoryToken, FileRepositoryToken, FileVersionRepositoryToken, FileWriteRepositoryToken } from "./constants/tokens"
-import { File, FileEvent, FileRead, FileVersion, FileWrite } from "./entities"
+import { FileEventsRepositoryToken, FileReadRepositoryToken, FileRepositoryToken, FileStatusRepositoryToken, FileVersionRepositoryToken, FileWriteRepositoryToken, ManualFileStatusEventRepositoryToken } from "./constants/tokens"
+import { File, FileEvent, FileRead, FileStatus, FileVersion, FileWrite, ManualFileStatusEvent } from "./entities"
 
 interface RepositoryToken {
   token: InjectionToken,
@@ -27,5 +27,13 @@ export const repositoryTokens: RepositoryToken[] = [
     token: FileEventsRepositoryToken,
     entity: FileEvent
   },
+  {
+    token: FileStatusRepositoryToken,
+    entity: FileStatus
+  },
+  {
+    token: ManualFileStatusEventRepositoryToken,
+    entity: ManualFileStatusEvent
+  }
 
 ]

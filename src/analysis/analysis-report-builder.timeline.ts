@@ -208,8 +208,11 @@ export const buildTimelineAndOperations = ({
   timeline.sort((a, b) => normalizer.sortDesc(a.timestamp, b.timestamp, a.id, b.id));
 
   const operations: AnalysisOperationItem[] = [
+    
     ...reads.map((row) => toOperationItem(normalizer, "READ", row, fileItemsById, resolveRootSourceIds)),
+
     ...writes.map((row) => toOperationItem(normalizer, "WRITE", row, fileItemsById, resolveRootSourceIds)),
+
   ].sort((a, b) => normalizer.sortDesc(a.timestamp, b.timestamp, a.id, b.id)).slice(0, inputLimit);
 
   const timelineEntries: AnalysisTimelineEntry[] = timeline.map((item, index) => ({ ...item, index: index + 1 }));

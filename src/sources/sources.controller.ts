@@ -8,8 +8,7 @@ import { Request, Response } from "express";
 export class SourcesController {
   constructor(
     private readonly sourcesService: SourcesService
-  ) {
-  }
+  ) { }
 
   @Get()
   async getSources(req: Request, res: Response) {

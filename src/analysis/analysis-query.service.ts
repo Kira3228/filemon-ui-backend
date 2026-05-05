@@ -29,6 +29,7 @@ import {
   FileMonitoringLookupRow,
   TMonitoringStatus,
 } from "./analysis.types";
+import { log } from "console";
 
 type AnalysisQueryFilter = {
   limit?: number;

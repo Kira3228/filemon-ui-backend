@@ -1,75 +1,35 @@
 import "reflect-metadata";
-import express, { Router } from 'express';
+import express from 'express';
 import { EventEmitter } from 'events';
 import cors from 'cors'
 import { container } from 'tsyringe'
 import { NotFoundError } from "./errors/http-errors";
 import { errorHandler } from "./middleware/error-handler";
-import { PREFIX_META, ROUTE_META, RouteInfo } from "./shared/utils/routing";
-import { asyncHandler, RouteHandler } from "./shared/utils/async-handler";
 import { FileController } from "./event/event.controller";
 import { EventService } from "./event/event.service";
-import { FileManagementService } from "./file-management/file-management.service";
 import { AnalysisController } from "./analysis/analysis.controller";
 import { AppDatabaseService } from "./database/app-database.service";
 import { DatabaseSettingsController } from "./database/database-settings.controller";
-import { Connection } from "typeorm";
-import { InjectionToken } from "tsyringe";
 import { repositoryTokens } from "./repository-tokens";
 import { SourcesController } from "./sources/sources.controller";
+import { registerRepositories } from "./register-repositories";
+import { buildRouter, ControllerClass } from "./build-router";
+import { FilesController } from "./Files/files.controller";
+import { OperationController } from "./operation/operation.controller";
+import { EventsController } from "./events/events.controller";
 
 EventEmitter.defaultMaxListeners = 15;
 
-type ControllerClass = new (...args: any[]) => object;
+
 type ProviderClass<T = unknown> = new (...args: any[]) => T;
-type ControllerInstance = object;
 
-
-const registerRoute = (
-    router: Router,
-    route: RouteInfo,
-    instance: ControllerInstance,
-) => {
-    const routeHandler = (instance as Record<string, unknown>)[route.handler];
-
-    if (typeof routeHandler !== "function") {
-        throw new Error(`Route handler "${route.handler}" is not defined`);
-    }
-
-    const handler = asyncHandler(routeHandler.bind(instance) as RouteHandler);
-
-    switch (route.method) {
-        case "get":
-            router.get(route.path, handler);
-            break;
-        case "post":
-            router.post(route.path, handler);
-            break;
-        case "patch":
-            router.patch(route.path, handler);
-            break;
-        case "delete":
-            router.delete(route.path, handler);
-            break;
-    }
-};
-
-function registerRepositories(
-    dataSource: Connection,
-    repos: { token: InjectionToken<any>; entity: any }[]
-) {
-    for (const { token, entity } of repos) {
-        container.register(token, {
-            useValue: dataSource.getRepository(entity),
-        });
-    }
-}
 
 async function bootstrap() {
     const databaseService = new AppDatabaseService();
     container.registerInstance(AppDatabaseService, databaseService);
 
     await databaseService.initialize();
+
     const app = express();
     const PORT = Number(process.env.PORT) || 5000;
 
@@ -82,7 +42,6 @@ async function bootstrap() {
 
     const providers: ProviderClass[] = [
         EventService,
-        FileManagementService,
     ];
     providers.forEach((provider) => {
         container.registerSingleton(provider);
@@ -96,17 +55,18 @@ async function bootstrap() {
         SourcesController
     ]
 
-    for (const ControllerClass of controllers) {
-        const prefix = Reflect.getMetadata(PREFIX_META, ControllerClass) || '';
-        const instance = container.resolve(ControllerClass) as ControllerInstance;
-        const routes: RouteInfo[] = Reflect.getMetadata(ROUTE_META, ControllerClass) || [];
+    const v2conrollers: ControllerClass[] = [
+        SourcesController,
+        FilesController,
+        OperationController,
+        EventsController
+    ]
 
-        const router = Router();
-        for (const route of routes) {
-            registerRoute(router, route, instance);
-        }
-        app.use(prefix, router);
-    }
+    const v1Router = buildRouter(controllers)
+    const v2Router = buildRouter(v2conrollers)
+
+    app.use("/api/v1", v1Router)
+    app.use("/api/v2", v2Router)
 
     app.use((_req, _res, next) => {
         next(new NotFoundError("Маршрут не найден"));

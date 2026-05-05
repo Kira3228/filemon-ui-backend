@@ -1,4 +1,4 @@
-import { normalizeFileEvent } from "../sources/helpers/normalize-file-event";
+import { normalizeFileEvent } from "../shared/helpers/normalize-file-event";
 import { AnalysisNormalizerService } from "./analysis-normalizer.service";
 import { parseManualStatusEvent } from "./analysis-report-builder.mappers";
 import type {

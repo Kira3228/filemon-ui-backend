@@ -1,7 +1,7 @@
 import { AnalysisFileEventRow, AnalysisFilePathRef, AnalysisNormalizedFileEvent } from "../../analysis/analysis.types";
-import { getStringDetail } from "../../shared/utils/get-string-details";
-import { getDirName } from "../../shared/utils/gey-dir-name";
-import { splitLast } from "../../shared/utils/split-last";
+import { getStringDetail } from "../utils/get-string-details";
+import { getDirName } from "../utils/get-dir-name";
+import { splitLast } from "../utils/split-last";
 
 export const normalizeFileEvent = (
   row: AnalysisFileEventRow,

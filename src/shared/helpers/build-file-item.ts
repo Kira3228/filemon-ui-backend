@@ -1,10 +1,13 @@
-import { AnalysisFileItem, AnalysisFileLink, AnalysisFileRow, AnalysisFileVersionRow, AnalysisNormalizedFileEvent } from "../analysis/analysis.types";
-import { getOriginProcess } from "../shared/utils/get-origin-process";
-import { sortAsc } from "../shared/utils/sort-asc";
-import { splitLast } from "../shared/utils/split-last";
-import { buildPathHistory } from "./helpers/build-path-history";
-import { formatStatus } from "./helpers/format-status";
-import { getOriginUser } from "./helpers/get-origin-user";
+
+import { AnalysisFileItem, AnalysisFileLink, AnalysisFileRow, AnalysisFileVersionRow, AnalysisNormalizedFileEvent } from "../../analysis/analysis.types";
+import { getOriginProcess } from "../utils/get-origin-process";
+import { sortAsc } from "../utils/sort-asc";
+import { splitLast } from "../utils/split-last";
+import { buildPathHistory } from "./build-path-history";
+import { formatStatus } from "./format-status";
+import { getOriginUser } from "./get-origin-user";
+import { toFileLink } from "./to-file-link";
+
 
 export const buildFileItem = (
   file: AnalysisFileRow,
@@ -46,18 +49,5 @@ export const buildFileItem = (
     birthTime: file.birth_time,
     lastStatusAt: file.last_status_at,
     inode: file.inode,
-  };
-};
-
-const toFileLink = (file?: AnalysisFileRow): AnalysisFileLink | null => {
-  if (!file) {
-    return null;
-  }
-
-  return {
-    id: file.id,
-    fileId: file.id,
-    name: splitLast(file.full_path),
-    path: file.full_path,
   };
 };
