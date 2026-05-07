@@ -1,12 +1,12 @@
+import { AnalysisFileItem } from "../files/types/file-item.type";
+import { AnalysisSourceItem } from "../sources/types/source-item.type";
 import type {
   AnalysisChainEntry,
   AnalysisDiagramData,
-  AnalysisFileItem,
   AnalysisProcessReadGroup,
   AnalysisRenameHistoryItem,
   AnalysisReportOverview,
   AnalysisReportResult,
-  AnalysisSourceItem,
   AnalysisStatusHistoryItem,
   AnalysisTimelineEntry,
   AnalysisOperationItem,

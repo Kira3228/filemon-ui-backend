@@ -1,3 +1,6 @@
+import { AnalysisFileItem } from "../files/types/file-item.type";
+import { AnalysisSourceItem } from "../sources/types/source-item.type";
+
 export type Nullable<T> = T | null;
 export type TExportFormat = "csv" | "pdf";
 export type TMonitoringStatus = 1 | 2 | 3 | 4;
@@ -191,29 +194,29 @@ export interface AnalysisFileLink {
   path: string;
 }
 
-export interface AnalysisFileItem {
-  id: number;
-  fileId: number;
-  name: string;
-  path: string;
-  pathHistory: string[];
-  filesystem: Nullable<string>;
-  filesystemUuid: Nullable<string>;
-  sizeBytes: Nullable<number>;
-  versionCount: number;
-  depth: number;
-  parents: AnalysisFileLink[];
-  sourceIds: number[];
-  sourceLabels: AnalysisFileLink[];
-  originProcess: string;
-  user: string;
-  currentStatusCode: number;
-  currentStatus: string;
-  trackingStartedAt: string;
-  birthTime: Nullable<string>;
-  lastStatusAt: Nullable<string>;
-  inode: Nullable<number>;
-}
+// export interface AnalysisFileItem {
+//   id: number;
+//   fileId: number;
+//   name: string;
+//   path: string;
+//   pathHistory: string[];
+//   filesystem: Nullable<string>;
+//   filesystemUuid: Nullable<string>;
+//   sizeBytes: Nullable<number>;
+//   versionCount: number;
+//   depth: number;
+//   parents: AnalysisFileLink[];
+//   sourceIds: number[];
+//   sourceLabels: AnalysisFileLink[];
+//   originProcess: string;
+//   user: string;
+//   currentStatusCode: number;
+//   currentStatus: string;
+//   trackingStartedAt: string;
+//   birthTime: Nullable<string>;
+//   lastStatusAt: Nullable<string>;
+//   inode: Nullable<number>;
+// }
 
 export interface AnalysisSourceReader {
   processVersionId: Nullable<number>;
@@ -222,25 +225,27 @@ export interface AnalysisSourceReader {
   firstAt: string;
 }
 
-export interface AnalysisSourceStats {
-  processes: number;
-  producedFiles: number;
-  maxDepth: number;
-  readOps: number;
-}
+// export interface AnalysisSourceStats {
+//   processes: number;
+//   producedFiles: number;
+//   maxDepth: number;
+//   readOps: number;
+// }
 
-export interface AnalysisSourceItem {
-  id: number;
-  fileId: number;
-  name: string;
-  path: string;
-  filesystemUuid: Nullable<string>;
-  trackingStartedAt: string;
-  sourceIds: number[];
-  stats: AnalysisSourceStats;
-  readers: AnalysisSourceReader[];
-  produced: AnalysisFileItem[];
-}
+// export interface AnalysisSourceItem {
+//   id: number;
+//   fileId: number;
+//   name: string;
+//   path: string;
+//   filesystemUuid: Nullable<string>;
+//   trackingStartedAt: string;
+//   sourceIds: number[];
+//   stats: AnalysisSourceStats;
+//   readers: AnalysisSourceReader[];
+//   produced: AnalysisFileItem[];
+// }
+
+
 
 export interface AnalysisStatusHistoryItem {
   id: number;

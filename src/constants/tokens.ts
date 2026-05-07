@@ -1,6 +1,6 @@
 import { InjectionToken } from "tsyringe";
 import { EventService } from "../event/event.service";
-import { File, FileEvent, FileRead, FileStatus, FileVersion, FileWrite, ManualFileStatusEvent } from "../entities";
+import { File, FileEvent, FileRead, FileStatus, FileVersion, FileWrite, ManualFileStatusEvent, Process, ProcessVersion } from "../entities";
 import { Repository } from "typeorm";
 
 export const EventServiceToken: InjectionToken<EventService> =
@@ -26,5 +26,9 @@ export const FileStatusRepositoryToken: InjectionToken<Repository<FileStatus>> =
 
 export const ManualFileStatusEventRepositoryToken: InjectionToken<Repository<ManualFileStatusEvent>> =
   "ManualFileStatusEventRepositoryToken"
+
+export const ProcessVersionRepositoryToken: InjectionToken<Repository<ProcessVersion>> = "ProcessVersionRepositoryToken"
+
+export const ProcessRepositoryToken: InjectionToken<Repository<Process>> = "ProcessRepositoryToken"
 
 

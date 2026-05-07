@@ -1,5 +1,4 @@
 import { injectable } from "tsyringe";
-import { AnalysisFileRow, AnalysisRenameHistoryItem } from "../analysis/analysis.types";
 import { AnalysisNormalizerService } from "../analysis/analysis-normalizer.service";
 import { buildRenameHistory } from "../analysis/analysis-report-builder.collections";
 import { FileEventRowReadModel } from "../read-models/file-event-row.read-model";
@@ -7,6 +6,8 @@ import { FileVersionReadModel } from "../read-models/file-version.read-model";
 import { FilesReadModel } from "../read-models/files.read-model";
 import { normalizeFileEvent } from "../shared/helpers/normalize-file-event";
 import { buildParentsByFile, createRootSourceResolver } from "../sources/sources.graph";
+import { AnalysisRenameHistoryItem } from "./types/rename-history-item.type";
+import { AnalysisFileRow } from "../shared/types/read-model-row.type";
 
 
 

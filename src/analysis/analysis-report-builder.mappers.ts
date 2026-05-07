@@ -1,8 +1,8 @@
+import { AnalysisFileItem } from "../files/types/file-item.type";
 import { AnalysisNormalizerService } from "./analysis-normalizer.service";
 import type {
   AnalysisChainProcessEvent,
   AnalysisChainVersion,
-  AnalysisFileItem,
   AnalysisFileLink,
   AnalysisFilePathRef,
   AnalysisManualStatusEvent,

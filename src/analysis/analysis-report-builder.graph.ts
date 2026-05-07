@@ -1,8 +1,8 @@
+import { AnalysisFileItem } from "../files/types/file-item.type";
 import { splitLast } from "../shared/utils/split-last";
 import { AnalysisNormalizerService } from "./analysis-normalizer.service";
 import { toFileLinks } from "./analysis-report-builder.mappers";
 import type {
-  AnalysisFileItem,
   AnalysisFilePathRef,
   AnalysisFileRow,
   AnalysisFileVersionRow,

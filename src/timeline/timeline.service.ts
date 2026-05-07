@@ -1,5 +1,4 @@
 import { injectable } from "tsyringe";
-import { AnalysisFileItem, AnalysisFileRow, AnalysisTimelineEntry } from "../analysis/analysis.types";
 import { AnalysisNormalizerService } from "../analysis/analysis-normalizer.service";
 import { buildStatusHistory } from "../analysis/analysis-report-builder.collections";
 import { buildTimelineAndOperations } from "../analysis/analysis-report-builder.timeline";
@@ -18,6 +17,9 @@ import {
   groupFileEventsByFile,
   groupVersionsByFile,
 } from "../sources/sources.graph";
+import { AnalysisFileItem } from "../files/types/file-item.type";
+import { AnalysisFileRow } from "../shared/types/read-model-row.type";
+import { AnalysisTimelineEntry } from "./types/timeline-entry.type";
 
 @injectable()
 export class EventsService {

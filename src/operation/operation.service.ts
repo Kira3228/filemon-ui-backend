@@ -3,7 +3,9 @@ import { FileOperationReadModel } from "../read-models/file-operation.read-model
 import { FileVersionReadModel } from "../read-models/file-version.read-model";
 import { FileEventRowReadModel } from "../read-models/file-event-row.read-model";
 import { FilesReadModel } from "../read-models/files.read-model";
-import { AnalysisFileItem, AnalysisFileRow, AnalysisOperationItem } from "../analysis/analysis.types";
+import { AnalysisFileItem } from "../files/types/file-item.type";
+import { AnalysisOperationItem } from "./types/operation-item.type";
+import { AnalysisFileRow } from "../shared/types/read-model-row.type";
 import { buildFileItem } from "../shared/helpers/build-file-item";
 import { normalizeFileEvent } from "../shared/helpers/normalize-file-event";
 import {

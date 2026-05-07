@@ -3,11 +3,12 @@ import { FileVersionReadModel } from "../read-models/file-version.read-model";
 import { FileStatusRowsReadMode } from "../read-models/file-status-rows.read-model";
 import { ManualFileStatusEventReadModel } from "../read-models/manual-file-status.event.read-model";
 import { FilesReadModel } from "../read-models/files.read-model";
-import { AnalysisFileRow, AnalysisManualStatusEvent, AnalysisStatusHistoryItem } from "../analysis/analysis.types";
 import { AnalysisNormalizerService } from "../analysis/analysis-normalizer.service";
 import { buildStatusHistory } from "../analysis/analysis-report-builder.collections";
 import { parseManualStatusEvent } from "../analysis/analysis-report-builder.mappers";
 import { buildParentsByFile, createRootSourceResolver } from "../sources/sources.graph";
+import { AnalysisFileRow } from "../shared/types/read-model-row.type";
+import { AnalysisManualStatusEvent, AnalysisStatusHistoryItem } from "./types/status-history-item.type";
 
 @injectable()
 export class StatusHistoryService {

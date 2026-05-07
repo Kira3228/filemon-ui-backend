@@ -1,8 +1,8 @@
+import { AnalysisFileItem } from "../files/types/file-item.type";
 import { AnalysisNormalizerService } from "./analysis-normalizer.service";
 import { toOperationItem } from "./analysis-report-builder.mappers";
 import type {
   AnalysisDiagramProcessVersion,
-  AnalysisFileItem,
   AnalysisFileRow,
   AnalysisFileVersionRow,
   AnalysisNormalizedFileEvent,
@@ -77,41 +77,41 @@ export const buildTimelineAndOperations = ({
     const sourceIds = resolveRootSourceIds(file.id);
     timeline.push({
       id: `tracking-${file.id}`,
-        type: "TRACKING",
+      type: "TRACKING",
+      timestamp: file.tracking_started_at,
+      fileId: file.id,
+      fileName: normalizer.getFileName(file.full_path),
+      fileStatus: resolveTimelineStatus(file.id, file.tracking_started_at),
+      processVersionId: null,
+      processLabel: null,
+      details: `Начало мониторинга | FS ${file.filesystem_uuid || "-"}`,
+      sourceIds,
+    });
+    if (sourceIds.length === 1 && sourceIds[0] === file.id) {
+      timeline.push({
+        id: `source-${file.id}`,
+        type: "SOURCE",
         timestamp: file.tracking_started_at,
         fileId: file.id,
         fileName: normalizer.getFileName(file.full_path),
         fileStatus: resolveTimelineStatus(file.id, file.tracking_started_at),
         processVersionId: null,
         processLabel: null,
-        details: `Начало мониторинга | FS ${file.filesystem_uuid || "-"}`,
-      sourceIds,
-    });
-    if (sourceIds.length === 1 && sourceIds[0] === file.id) {
-      timeline.push({
-        id: `source-${file.id}`,
-          type: "SOURCE",
-          timestamp: file.tracking_started_at,
-          fileId: file.id,
-          fileName: normalizer.getFileName(file.full_path),
-          fileStatus: resolveTimelineStatus(file.id, file.tracking_started_at),
-          processVersionId: null,
-          processLabel: null,
-          details: `${normalizer.getFileName(file.full_path)} | исходный файл`,
+        details: `${normalizer.getFileName(file.full_path)} | исходный файл`,
         sourceIds,
       });
     }
     if (Number(file.raw_status) === deletedStatus && file.last_status_at) {
       timeline.push({
         id: `delete-${file.id}`,
-          type: "DELETE",
-          timestamp: file.last_status_at,
-          fileId: file.id,
-          fileName: normalizer.getFileName(file.full_path),
-          fileStatus: resolveTimelineStatus(file.id, file.last_status_at),
-          processVersionId: null,
-          processLabel: null,
-          details: "Файл удален",
+        type: "DELETE",
+        timestamp: file.last_status_at,
+        fileId: file.id,
+        fileName: normalizer.getFileName(file.full_path),
+        fileStatus: resolveTimelineStatus(file.id, file.last_status_at),
+        processVersionId: null,
+        processLabel: null,
+        details: "Файл удален",
         sourceIds,
       });
     }
@@ -208,7 +208,7 @@ export const buildTimelineAndOperations = ({
   timeline.sort((a, b) => normalizer.sortDesc(a.timestamp, b.timestamp, a.id, b.id));
 
   const operations: AnalysisOperationItem[] = [
-    
+
     ...reads.map((row) => toOperationItem(normalizer, "READ", row, fileItemsById, resolveRootSourceIds)),
 
     ...writes.map((row) => toOperationItem(normalizer, "WRITE", row, fileItemsById, resolveRootSourceIds)),

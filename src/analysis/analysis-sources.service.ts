@@ -1,12 +1,12 @@
 import { injectable } from "tsyringe";
 import {
-  AnalysisFileItem,
   AnalysisFileVersionRow,
   AnalysisOperationRow,
-  AnalysisSourceItem,
 } from "./analysis.types";
 import { AnalysisNormalizerService } from "./analysis-normalizer.service";
 import { isDefined } from "./analysis-report-builder.mappers";
+import { AnalysisFileItem } from "../files/types/file-item.type";
+import { AnalysisSourceItem } from "../sources/types/source-item.type";
 
 export interface BuildSourceRootsOptions {
   fileItems: AnalysisFileItem[];

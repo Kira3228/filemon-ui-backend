@@ -14,12 +14,13 @@ import { repositoryTokens } from "./repository-tokens";
 import { SourcesController } from "./sources/sources.controller";
 import { registerRepositories } from "./register-repositories";
 import { buildRouter, ControllerClass } from "./build-router";
-import { FilesController } from "./Files/files.controller";
+import { FilesController } from "./files/files.controller";
 import { OperationController } from "./operation/operation.controller";
 import { EventsController } from "./timeline/timeline.controller";
 import { StatusHistoryController } from "./status-history/status-history.controller";
 import { RenameHistoryController } from "./rename-history/rename-history.controller";
 import { ProcessReadsController } from "./process-reads/process-reads.controller";
+import { DiagramDatasetService } from "./file-tree/file-tree.service";
 
 EventEmitter.defaultMaxListeners = 15;
 
@@ -65,7 +66,8 @@ async function bootstrap() {
         EventsController,
         StatusHistoryController,
         RenameHistoryController,
-        ProcessReadsController
+        ProcessReadsController,
+        DiagramDatasetService
     ]
 
     const v1Router = buildRouter(controllers)

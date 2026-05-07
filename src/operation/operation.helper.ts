@@ -1,4 +1,6 @@
-import { AnalysisFileItem, AnalysisOperationItem, AnalysisOperationRow } from "../analysis/analysis.types";
+import { AnalysisFileItem } from "../files/types/file-item.type";
+import { AnalysisOperationItem } from "./types/operation-item.type";
+import { AnalysisOperationRow } from "../shared/types/read-model-row.type";
 import { buildProcessLabel } from "../shared/helpers/build-process-label";
 import { formatProcessDisplayName } from "../shared/helpers/format-process-display-name";
 import { splitLast } from "../shared/utils/split-last";

@@ -1,19 +1,19 @@
 import { injectable } from "tsyringe";
 import {
-  AnalysisFileItem,
-  AnalysisFileRow,
   AnalysisNormalizedFileEvent,
-  AnalysisSourceItem,
-} from "../analysis/analysis.types";
+} from "../shared/types/read-model-row.type";
+import { AnalysisFileItem } from "../files/types/file-item.type";
+import { AnalysisFileRow } from "../shared/types/read-model-row.type";
 import { FilesReadModel } from "../read-models/files.read-model";
 import { FileVersionReadModel } from "../read-models/file-version.read-model";
-import { splitLast } from "../shared/utils/split-last";
 import { FileOperationReadModel } from "../read-models/file-operation.read-model";
-import { buildProcessLabel } from "../shared/utils/build-process-label";
 import { buildChildrenByFile, buildParentsByFile, createDescendantsResolver, createRootSourceResolver, groupFileEventsByFile, groupReadsByFile, groupVersionsByFile } from "./sources.graph";
 import { FileEventRowReadModel } from "../read-models/file-event-row.read-model";
 import { normalizeFileEvent } from "../shared/helpers/normalize-file-event";
 import { buildFileItem } from "../shared/helpers/build-file-item";
+import { SourceDto } from "./dto/sources.dto";
+import { buildSourceItem } from "./helpers/build-source-item";
+import { SourceListResult } from "./types/source-list-result.type";
 
 @injectable()
 export class SourcesService {
@@ -24,10 +24,22 @@ export class SourcesService {
     private readonly fileEventRowReadModel: FileEventRowReadModel
   ) { }
 
-  async getSources(): Promise<AnalysisSourceItem[]> {
-    const rootFiles = await this.filesReadModel.findRootFiles();
+  async getSources(filters: SourceDto): Promise<SourceListResult> {
+    const page = Math.max(1, Number(filters.page) || 1);
+    const limit = Math.max(1, Math.min(Number(filters.limit) || 250, 1000));
+
+    const [rootFiles, total] = await Promise.all([
+      this.filesReadModel.findRootFiles({ limit, page }),
+      this.filesReadModel.countRootFiles(),
+    ]);
+
     if (!rootFiles.length) {
-      return [];
+      return {
+        items: [],
+        page,
+        limit,
+        total,
+      };
     }
 
     const allFiles = await this.filesReadModel.findAllFiles();
@@ -66,46 +78,21 @@ export class SourcesService {
         ),
       );
     }
+    const items = rootFiles.map((file) =>
+      buildSourceItem(
+        file,
+        readsByFile,
+        versionsByFile,
+        resolveDescendants,
+        fileItemsById,
+      ),
+    );
 
-
-    return rootFiles.map((file): AnalysisSourceItem => {
-      const readers = readsByFile.get(file.id) || [];
-      const processLabels = new Set<string>(readers.map((row) => buildProcessLabel(row)));
-      const descendantIds = resolveDescendants(file.id);
-      const relatedFileIds = [file.id, ...descendantIds];
-      let maxDepth = 0;
-
-      for (const fileId of relatedFileIds) {
-        for (const version of versionsByFile.get(fileId) || []) {
-          maxDepth = Math.max(maxDepth, Number(version.depth) || 0);
-        }
-      }
-
-      return {
-        id: file.id,
-        fileId: file.id,
-        name: splitLast(file.full_path),
-        path: file.full_path,
-        filesystemUuid: file.filesystem_uuid,
-        trackingStartedAt: String(file.tracking_started_at || ""),
-        sourceIds: [file.id],
-        stats: {
-          processes: processLabels.size,
-          producedFiles: descendantIds.length,
-          maxDepth,
-          readOps: readers.length,
-        },
-        readers: readers.slice(0, 8).map((row) => ({
-          processVersionId: row.process_version_id,
-          label: buildProcessLabel(row),
-          count: Number(row.count) || 1,
-          firstAt: row.first_at,
-        })),
-        produced: descendantIds
-          .map((fileId) => fileItemsById.get(fileId))
-          .filter((item): item is AnalysisFileItem => Boolean(item))
-          .slice(0, 8),
-      };
-    });
+    return {
+      items,
+      page,
+      limit,
+      total,
+    };
   }
 }

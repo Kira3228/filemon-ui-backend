@@ -8,13 +8,13 @@ import { buildChains, buildDiagramData, buildOverview } from "./analysis-report-
 import { buildTimelineAndOperations } from "./analysis-report-builder.timeline";
 import { AnalysisSourcesService } from "./analysis-sources.service";
 import {
-  AnalysisFileItem,
   AnalysisReportResult,
   AnalysisReportSectionKey,
   AnalysisReportSourceData,
   AnalysisReportSummary,
   TMonitoringStatus,
 } from "./analysis.types";
+import { AnalysisFileItem } from "../files/types/file-item.type";
 
 @injectable()
 export class AnalysisReportBuilderService {

@@ -49,4 +49,8 @@ export class FileVersionReadModel {
       .where("file.id IN (:...fileIds)", { fileIds })
       .getRawMany() as Promise<AnalysisFileVersionRow[]>;
   }
+
+  async findAllFileVersions() {
+    return this.buildFileVersionsQuery().getMany()
+  }
 }

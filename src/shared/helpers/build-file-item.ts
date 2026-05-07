@@ -1,5 +1,6 @@
 
-import { AnalysisFileItem, AnalysisFileLink, AnalysisFileRow, AnalysisFileVersionRow, AnalysisNormalizedFileEvent } from "../../analysis/analysis.types";
+import { AnalysisFileLink, AnalysisFileRow, AnalysisFileVersionRow, AnalysisNormalizedFileEvent } from "../../analysis/analysis.types";
+import { AnalysisFileItem } from "../../files/types/file-item.type";
 import { getOriginProcess } from "../utils/get-origin-process";
 import { sortAsc } from "../utils/sort-asc";
 import { splitLast } from "../utils/split-last";

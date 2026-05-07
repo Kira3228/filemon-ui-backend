@@ -2,15 +2,15 @@ import { injectable } from "tsyringe";
 import {
   AnalysisFileVersionRow,
   AnalysisOperationRow,
-  AnalysisProcessReadGroup,
-  Nullable,
-} from "../analysis/analysis.types";
+} from "../shared/types/read-model-row.type";
 import { AnalysisNormalizerService } from "../analysis/analysis-normalizer.service";
 import { buildProcessReads } from "../analysis/analysis-report-builder.collections";
 import { FileOperationReadModel } from "../read-models/file-operation.read-model";
 import { FileVersionReadModel } from "../read-models/file-version.read-model";
 import { FilesReadModel } from "../read-models/files.read-model";
 import { buildParentsByFile, createRootSourceResolver } from "../sources/sources.graph";
+import { AnalysisProcessReadGroup } from "./types/process-read-group.type";
+import { Nullable } from "../shared/types/nullable.type";
 
 interface ProcessVersionSeed {
   processId: Nullable<number>;

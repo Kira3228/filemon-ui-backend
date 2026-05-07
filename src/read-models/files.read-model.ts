@@ -46,5 +46,12 @@ export class FilesReadModel {
       .offset(offset)
       .getRawMany() as Promise<AnalysisFileRow[]>;
   }
-}
 
+  async countRootFiles(): Promise<number> {
+    return this.fileRepository
+      .createQueryBuilder("f")
+      .leftJoin("f.originProcessVersion", "opv")
+      .where("opv.id IS NULL")
+      .getCount();
+  }
+}

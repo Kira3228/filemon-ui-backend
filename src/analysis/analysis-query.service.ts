@@ -29,7 +29,6 @@ import {
   FileMonitoringLookupRow,
   TMonitoringStatus,
 } from "./analysis.types";
-import { log } from "console";
 
 type AnalysisQueryFilter = {
   limit?: number;
@@ -219,7 +218,9 @@ export class AnalysisQueryService {
 
   private async buildDiagramSourceData(filter: AnalysisQueryFilter): Promise<AnalysisReportSourceData> {
     const context = await this.createLoadContext(filter, true);
-    if (!this.hasFiles(context)) return context.sourceData;
+    if (!this.hasFiles(context)) {
+      return context.sourceData;
+    }
 
     await this.loadFileVersions(context);
     await this.loadReads(context);
@@ -231,7 +232,9 @@ export class AnalysisQueryService {
 
   private async buildChainsSourceData(filter: AnalysisQueryFilter): Promise<AnalysisReportSourceData> {
     const context = await this.createLoadContext(filter, true);
-    if (!this.hasFiles(context)) return context.sourceData;
+    if (!this.hasFiles(context)) {
+      return context.sourceData;
+    }
 
     await this.loadFileVersions(context);
     await this.loadReads(context);

@@ -7,10 +7,10 @@ import { buildTimelineAndOperations } from "./analysis-report-builder.timeline";
 import { AnalysisSourcesService } from "./analysis-sources.service";
 import type { AnalysisReportIndexes } from "./analysis-report-builder.indexes";
 import type {
-  AnalysisFileItem,
   AnalysisReportResult,
   AnalysisReportSourceData,
 } from "./analysis.types";
+import { AnalysisFileItem } from "../files/types/file-item.type";
 
 interface BuildAnalysisReportPayloadOptions {
   deletedStatus: number;

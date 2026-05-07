@@ -1,4 +1,4 @@
-import { AnalysisFileRow, AnalysisFileVersionRow, AnalysisNormalizedFileEvent, AnalysisOperationRow } from "../analysis/analysis.types";
+import { AnalysisFileRow, AnalysisFileVersionRow, AnalysisNormalizedFileEvent, AnalysisOperationRow } from "../shared/types/read-model-row.type";
 
 export const groupVersionsByFile = (versions: AnalysisFileVersionRow[], fileIds: number[]) => {
   const result = new Map<number, AnalysisFileVersionRow[]>();
@@ -144,4 +144,3 @@ export const buildParentsByFile = (versions: AnalysisFileVersionRow[], fileIds: 
 
   return result;
 }
-
