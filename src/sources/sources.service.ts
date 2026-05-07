@@ -14,6 +14,7 @@ import { buildFileItem } from "../shared/helpers/build-file-item";
 import { SourceDto } from "./dto/sources.dto";
 import { buildSourceItem } from "./helpers/build-source-item";
 import { SourceListResult } from "./types/source-list-result.type";
+import { buildPaginatedResult, normalizePagination } from "../shared/utils/pagination";
 
 @injectable()
 export class SourcesService {
@@ -25,8 +26,7 @@ export class SourcesService {
   ) { }
 
   async getSources(filters: SourceDto): Promise<SourceListResult> {
-    const page = Math.max(1, Number(filters.page) || 1);
-    const limit = Math.max(1, Math.min(Number(filters.limit) || 250, 1000));
+    const { page, limit } = normalizePagination(filters, { defaultLimit: 250, maxLimit: 1000 });
 
     const [rootFiles, total] = await Promise.all([
       this.filesReadModel.findRootFiles({ limit, page }),
@@ -34,12 +34,7 @@ export class SourcesService {
     ]);
 
     if (!rootFiles.length) {
-      return {
-        items: [],
-        page,
-        limit,
-        total,
-      };
+      return buildPaginatedResult([], page, limit, total);
     }
 
     const allFiles = await this.filesReadModel.findAllFiles();
@@ -88,11 +83,6 @@ export class SourcesService {
       ),
     );
 
-    return {
-      items,
-      page,
-      limit,
-      total,
-    };
+    return buildPaginatedResult(items, page, limit, total);
   }
 }

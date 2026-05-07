@@ -8,6 +8,8 @@ import { AnalysisOperationItem } from "./types/operation-item.type";
 import { AnalysisFileRow } from "../shared/types/read-model-row.type";
 import { buildFileItem } from "../shared/helpers/build-file-item";
 import { normalizeFileEvent } from "../shared/helpers/normalize-file-event";
+import { PaginatedResult, PaginationQuery } from "../shared/types/pagination.type";
+import { paginateItems } from "../shared/utils/pagination";
 import {
   buildParentsByFile,
   createRootSourceResolver,
@@ -25,7 +27,7 @@ export class OperationService {
     private readonly fileReadModel: FilesReadModel
   ) { }
 
-  async getOperations(): Promise<AnalysisOperationItem[]> {
+  async getOperations(filters: PaginationQuery = {}): Promise<PaginatedResult<AnalysisOperationItem>> {
     const allFiles = await this.fileReadModel.findAllFiles();
     const allFileIds = allFiles.map((file) => file.id);
 
@@ -65,11 +67,13 @@ export class OperationService {
       ...writes.map((row) => buildOperationItem("WRITE", row, fileItemsById, resolveRootSourceIds)),
     ];
 
-    return operations.sort((a, b) => {
+    const items = operations.sort((a, b) => {
       const aDate = a.timestamp ? String(a.timestamp) : "";
       const bDate = b.timestamp ? String(b.timestamp) : "";
       if (aDate === bDate) return a.id > b.id ? -1 : 1;
       return aDate > bDate ? -1 : 1;
     });
+
+    return paginateItems(items, filters, { defaultLimit: 250, maxLimit: 1000 });
   }
 }

@@ -1,8 +1,4 @@
+import { PaginatedResult } from "../../shared/types/pagination.type";
 import { AnalysisSourceItem } from "./source-item.type";
 
-export interface SourceListResult {
-  items: AnalysisSourceItem[];
-  page: number;
-  limit: number;
-  total: number;
-}
+export interface SourceListResult extends PaginatedResult<AnalysisSourceItem> {}

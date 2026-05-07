@@ -20,6 +20,8 @@ import {
 import { AnalysisFileItem } from "../files/types/file-item.type";
 import { AnalysisFileRow } from "../shared/types/read-model-row.type";
 import { AnalysisTimelineEntry } from "./types/timeline-entry.type";
+import { PaginatedResult, PaginationQuery } from "../shared/types/pagination.type";
+import { paginateItems } from "../shared/utils/pagination";
 
 @injectable()
 export class EventsService {
@@ -35,7 +37,7 @@ export class EventsService {
     private readonly normalizer: AnalysisNormalizerService,
   ) { }
 
-  async getEvents(): Promise<AnalysisTimelineEntry[]> {
+  async getEvents(filters: PaginationQuery = {}): Promise<PaginatedResult<AnalysisTimelineEntry>> {
     const allFiles = await this.filesReadModel.findAllFiles();
     const allFileIds = allFiles.map((file) => file.id);
 
@@ -92,7 +94,7 @@ export class EventsService {
       resolveRootSourceIds,
     });
 
-    return buildTimelineAndOperations({
+    const items = buildTimelineAndOperations({
       deletedStatus: this.deletedStatus,
       fileItemsById,
       files: allFiles,
@@ -107,5 +109,7 @@ export class EventsService {
       statusHistory,
       writes,
     }).timelineEntries;
+
+    return paginateItems(items, filters, { defaultLimit: 250, maxLimit: 1000 });
   }
 }

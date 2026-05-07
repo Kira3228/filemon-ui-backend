@@ -3,6 +3,7 @@ import { Controller, Get } from "../shared/utils/routing";
 import { Request, Response } from "express";
 import { FilesService } from "./files.service";
 import { AnalysisFileItem } from "./types/file-item.type";
+import { PaginatedResult, PaginationQuery } from "../shared/types/pagination.type";
 
 @Controller(`/files`)
 @injectable()
@@ -13,10 +14,10 @@ export class FilesController {
 
   @Get()
   async getFiles(
-    req: Request<Record<string, never>, AnalysisFileItem[]>,
-    res: Response<AnalysisFileItem[]>,
+    req: Request<Record<string, never>, PaginatedResult<AnalysisFileItem>, never, PaginationQuery>,
+    res: Response<PaginatedResult<AnalysisFileItem>>,
   ) {
-    const files = await this.filesService.getFiles();
+    const files = await this.filesService.getFiles(req.query);
     res.status(200).json(files);
   }
 }

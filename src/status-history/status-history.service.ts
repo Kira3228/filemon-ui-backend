@@ -9,6 +9,8 @@ import { parseManualStatusEvent } from "../analysis/analysis-report-builder.mapp
 import { buildParentsByFile, createRootSourceResolver } from "../sources/sources.graph";
 import { AnalysisFileRow } from "../shared/types/read-model-row.type";
 import { AnalysisManualStatusEvent, AnalysisStatusHistoryItem } from "./types/status-history-item.type";
+import { PaginatedResult, PaginationQuery } from "../shared/types/pagination.type";
+import { paginateItems } from "../shared/utils/pagination";
 
 @injectable()
 export class StatusHistoryService {
@@ -20,7 +22,7 @@ export class StatusHistoryService {
     private readonly normalizer: AnalysisNormalizerService
   ) { }
 
-  async getHistoryService(): Promise<AnalysisStatusHistoryItem[]> {
+  async getHistoryService(filters: PaginationQuery = {}): Promise<PaginatedResult<AnalysisStatusHistoryItem>> {
     const allFiles = await this.filesReadModel.findAllFiles();
     const allFileIds = allFiles.map((file) => file.id);
 
@@ -44,7 +46,7 @@ export class StatusHistoryService {
       manualStatusByFileAndTime.set(`${manualStatus.fileId}:${manualStatus.createdAt}`, manualStatus);
     }
 
-    return buildStatusHistory({
+    const items = buildStatusHistory({
       statusRows,
       filesById,
       manualStatusByHistoryId,
@@ -52,6 +54,8 @@ export class StatusHistoryService {
       normalizer: this.normalizer,
       resolveRootSourceIds,
     });
+
+    return paginateItems(items, filters, { defaultLimit: 250, maxLimit: 1000 });
   }
 
 }

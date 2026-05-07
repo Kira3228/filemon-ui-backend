@@ -8,6 +8,8 @@ import { normalizeFileEvent } from "../shared/helpers/normalize-file-event";
 import { buildParentsByFile, createRootSourceResolver } from "../sources/sources.graph";
 import { AnalysisRenameHistoryItem } from "./types/rename-history-item.type";
 import { AnalysisFileRow } from "../shared/types/read-model-row.type";
+import { PaginatedResult, PaginationQuery } from "../shared/types/pagination.type";
+import { paginateItems } from "../shared/utils/pagination";
 
 
 
@@ -20,7 +22,7 @@ export class RenameHistoryService {
     private readonly normalizer: AnalysisNormalizerService,
   ) { }
 
-  async getRenameHistory(): Promise<AnalysisRenameHistoryItem[]> {
+  async getRenameHistory(filters: PaginationQuery = {}): Promise<PaginatedResult<AnalysisRenameHistoryItem>> {
     const allFiles = await this.filesReadModel.findAllFiles();
     const allFileIds = allFiles.map((file) => file.id);
 
@@ -36,11 +38,13 @@ export class RenameHistoryService {
       .map((row) => normalizeFileEvent(row, filesById))
       .filter((item): item is NonNullable<typeof item> => Boolean(item));
 
-    return buildRenameHistory(
+    const items = buildRenameHistory(
       normalizedRenameRows,
       filesById,
       this.normalizer,
       resolveRootSourceIds,
     );
+
+    return paginateItems(items, filters, { defaultLimit: 250, maxLimit: 1000 });
   }
 }

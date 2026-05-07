@@ -1,4 +1,6 @@
-export interface EventFilterDto {
+import { PaginationQuery } from "../../shared/types/pagination.type";
+
+export interface EventFilterDto extends PaginationQuery {
   status?: string
   filesystemId?: string
   trackingStartedAt?: string
@@ -9,7 +11,5 @@ export interface EventFilterDto {
   executablePath?: string
   operationType?: string
   firstAt?: string
-  limit?: number
-  page?: number
   process?: string
 }

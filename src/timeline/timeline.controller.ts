@@ -3,6 +3,7 @@ import { Controller, Get } from "../shared/utils/routing";
 import { Request, Response } from "express";
 import { EventsService } from "./timeline.service";
 import { AnalysisTimelineEntry } from "./types/timeline-entry.type";
+import { PaginatedResult, PaginationQuery } from "../shared/types/pagination.type";
 
 @Controller(`/events`)
 @injectable()
@@ -13,10 +14,10 @@ export class EventsController {
 
   @Get()
   async getEvents(
-    req: Request<Record<string, never>, AnalysisTimelineEntry[]>,
-    res: Response<AnalysisTimelineEntry[]>,
+    req: Request<Record<string, never>, PaginatedResult<AnalysisTimelineEntry>, never, PaginationQuery>,
+    res: Response<PaginatedResult<AnalysisTimelineEntry>>,
   ) {
-    const events = await this.eventsService.getEvents();
+    const events = await this.eventsService.getEvents(req.query);
     res.status(200).json(events);
   }
 }

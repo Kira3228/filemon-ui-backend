@@ -18,6 +18,8 @@ export class FileController {
     const result = await this.eventService.getFiles({
       filesystemId: filesystem_id ? Number(filesystem_id) : undefined,
       deleted: deleted === "true" ? true : deleted === "false" ? false : undefined,
+      page: req.query.page ? Number(req.query.page) : undefined,
+      limit: req.query.limit ? Number(req.query.limit) : undefined,
     });
     res.status(200).json(result);
   }
@@ -40,6 +42,8 @@ export class FileController {
         ? Number(origin_process_version_id)
         : undefined,
       depth: depth ? Number(depth) : undefined,
+      page: req.query.page ? Number(req.query.page) : undefined,
+      limit: req.query.limit ? Number(req.query.limit) : undefined,
     });
     res.status(200).json(result);
   }
@@ -57,7 +61,11 @@ export class FileController {
 
   @Get(`/all`)
   async getReads(req: Request<any, any, any, EventFilterDto>, res: Response) {
-    const result = await this.eventService.getEvents(req.query);
+    const result = await this.eventService.getEvents({
+      ...req.query,
+      page: req.query.page ? Number(req.query.page) : undefined,
+      limit: req.query.limit ? Number(req.query.limit) : undefined,
+    });
     res.status(200).json(result);
   }
 
@@ -85,6 +93,8 @@ export class FileController {
         : undefined,
       from: from ? new Date(from as string) : undefined,
       to: to ? new Date(to as string) : undefined,
+      page: req.query.page ? Number(req.query.page) : undefined,
+      limit: req.query.limit ? Number(req.query.limit) : undefined,
     });
     res.status(200).json(result);
   }

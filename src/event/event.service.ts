@@ -9,19 +9,21 @@ import {
 import { EventFilterDto } from "./dto/event-filter.dto";
 import { AppDatabaseService } from "../database/app-database.service";
 import { ensureManualFileStatusEventsTable, hasTable } from "../database/schema";
+import { buildPaginatedResult, normalizePagination, paginateItems } from "../shared/utils/pagination";
+import { PaginationQuery } from "../shared/types/pagination.type";
 
-export interface GetFilesFilter {
+export interface GetFilesFilter extends PaginationQuery {
   filesystemId?: number;
   deleted?: boolean;
 }
 
-export interface GetFileVersionsFilter {
+export interface GetFileVersionsFilter extends PaginationQuery {
   fileId?: number;
   originProcessVersionId?: number;
   depth?: number;
 }
 
-export interface GetOpsFilter {
+export interface GetOpsFilter extends PaginationQuery {
   fileId?: number;
   processVersionId?: number;
   from?: Date;
@@ -40,6 +42,7 @@ export class EventService {
 
 
   async getFiles(filter: GetFilesFilter = {}) {
+    const { page, limit, offset } = normalizePagination(filter, { defaultLimit: 250, maxLimit: 1000 });
     const fileRepo = await this.databaseService.getRepository(File);
     const qb = fileRepo
       .createQueryBuilder("f")
@@ -57,7 +60,9 @@ export class EventService {
 
     qb.orderBy("f.tracking_started_at", "DESC");
 
-    return qb.getMany();
+    const [items, total] = await qb.offset(offset).limit(limit).getManyAndCount();
+
+    return buildPaginatedResult(items, page, limit, total);
   }
 
   async getFileById(id: number) {
@@ -74,6 +79,7 @@ export class EventService {
   }
 
   async getFileVersions(filter: GetFileVersionsFilter = {}) {
+    const { page, limit, offset } = normalizePagination(filter, { defaultLimit: 250, maxLimit: 1000 });
     const fileVersionRepo = await this.databaseService.getRepository(FileVersion);
     const qb = fileVersionRepo
       .createQueryBuilder("fv")
@@ -98,7 +104,9 @@ export class EventService {
 
     qb.orderBy("fv.created_at", "DESC");
 
-    return qb.getMany();
+    const [items, total] = await qb.offset(offset).limit(limit).getManyAndCount();
+
+    return buildPaginatedResult(items, page, limit, total);
   }
 
   async getFileVersionById(id: number) {
@@ -162,10 +170,12 @@ export class EventService {
       (!filter.operationType || filter.operationType === 'write') ? wQb.getMany() : Promise.resolve([]),
     ]);
 
-    return [
+    const items = [
       ...reads.map(r => ({ type: "read" as const, ...this.mapFileRead(r) })),
       ...writes.map(w => ({ type: "write" as const, ...this.mapFileRead(w) })),
     ].sort((a, b) => new Date(b.firstAt).getTime() - new Date(a.firstAt).getTime());
+
+    return paginateItems(items, filter, { defaultLimit: 250, maxLimit: 1000 });
   }
 
   private mapFileRead(row: FileRead | FileWrite) {
@@ -208,6 +218,7 @@ export class EventService {
   }
 
   async getFileWrite(filter: GetOpsFilter = {}) {
+    const { page, limit, offset } = normalizePagination(filter, { defaultLimit: 250, maxLimit: 1000 });
     const fileWriteRepo = await this.databaseService.getRepository(FileWrite);
     const qb = fileWriteRepo
       .createQueryBuilder("fw")
@@ -237,7 +248,9 @@ export class EventService {
 
     qb.orderBy("fw.created_at", "DESC");
 
-    return qb.getMany();
+    const [items, total] = await qb.offset(offset).limit(limit).getManyAndCount();
+
+    return buildPaginatedResult(items, page, limit, total);
   }
 
   async getFileWriteByPk(fileId: number, processVersionId: number) {

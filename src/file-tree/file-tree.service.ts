@@ -1,10 +1,12 @@
 import { injectable } from "tsyringe";
-import { AnalysisService } from "../analysis/analysis.service";
 import { FileVersionReadModel } from "../read-models/file-version.read-model";
 import { FileOperationReadModel } from "../read-models/file-operation.read-model";
 import { buildDiagramData } from "./build-diagram-data";
 import { AnalysisFileVersionRow, AnalysisOperationRow } from "../shared/types/read-model-row.type";
 import { FileTreeResult } from "./types/file-tree-result.type";
+import { PaginationQuery } from "../shared/types/pagination.type";
+import { buildPaginatedResult, normalizePagination } from "../shared/utils/pagination";
+import { FilesService } from "../files/files.service";
 
 export interface DiagramDataObject {
   fileVersions: AnalysisFileVersionRow[];
@@ -16,15 +18,17 @@ export interface DiagramDataObject {
 @injectable()
 export class DiagramDatasetService {
   constructor(
-    private readonly analysisService: AnalysisService,
+    private readonly filesService: FilesService,
     private readonly fileVersionReadModel: FileVersionReadModel,
     private readonly fileOperationReadModel: FileOperationReadModel
   ) { }
 
-  async getFileTree(): Promise<FileTreeResult> {
-    const files = await this.analysisService.getReportFiles();
-
-    const fileIds = files.map((file) => file.fileId);
+  async getFileTree(filters: PaginationQuery = {}): Promise<FileTreeResult> {
+    const files = await this.filesService.getAllFiles();
+    const total = files.length;
+    const { page, limit, offset } = normalizePagination(filters, { defaultLimit: 250, maxLimit: 1000 });
+    const items = files.slice(offset, offset + limit);
+    const fileIds = items.map((file) => file.fileId);
 
     const [fileVersions, reads, writes] = await Promise.all([
       this.fileVersionReadModel.findFileVersionsByFileIds(fileIds),
@@ -39,7 +43,7 @@ export class DiagramDatasetService {
     };
 
     return {
-      files,
+      ...buildPaginatedResult(items, page, limit, total),
       diagramData: buildDiagramData(resultObject),
     };
   }

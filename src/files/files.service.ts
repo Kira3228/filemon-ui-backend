@@ -6,6 +6,8 @@ import { AnalysisFileItem } from "./types/file-item.type";
 import { AnalysisFileRow } from "../shared/types/read-model-row.type";
 import { buildFileItem } from "../shared/helpers/build-file-item";
 import { normalizeFileEvent } from "../shared/helpers/normalize-file-event";
+import { PaginatedResult, PaginationQuery } from "../shared/types/pagination.type";
+import { paginateItems } from "../shared/utils/pagination";
 import {
   buildParentsByFile,
   createRootSourceResolver,
@@ -22,8 +24,7 @@ export class FilesService {
   ) { }
 
 
-  async getFiles(): Promise<AnalysisFileItem[]> {
-
+  async getAllFiles(): Promise<AnalysisFileItem[]> {
     const allFiles = await this.filesReadModel.findAllFiles();
     const allFilesIds = allFiles.map((file) => file.id);
 
@@ -58,6 +59,11 @@ export class FilesService {
         if (aDate === bDate) return b.id - a.id;
         return aDate > bDate ? -1 : 1;
       });
+  }
+
+  async getFiles(filters: PaginationQuery = {}): Promise<PaginatedResult<AnalysisFileItem>> {
+    const items = await this.getAllFiles();
+    return paginateItems(items, filters, { defaultLimit: 250, maxLimit: 1000 });
   }
 
 }

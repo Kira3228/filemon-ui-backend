@@ -11,6 +11,8 @@ import { FilesReadModel } from "../read-models/files.read-model";
 import { buildParentsByFile, createRootSourceResolver } from "../sources/sources.graph";
 import { AnalysisProcessReadGroup } from "./types/process-read-group.type";
 import { Nullable } from "../shared/types/nullable.type";
+import { PaginatedResult, PaginationQuery } from "../shared/types/pagination.type";
+import { paginateItems } from "../shared/utils/pagination";
 
 interface ProcessVersionSeed {
   processId: Nullable<number>;
@@ -28,7 +30,7 @@ export class ProcessReadsService {
     private readonly normalizer: AnalysisNormalizerService,
   ) { }
 
-  async getProcessReads(): Promise<AnalysisProcessReadGroup[]> {
+  async getProcessReads(filters: PaginationQuery = {}): Promise<PaginatedResult<AnalysisProcessReadGroup>> {
     const allFiles = await this.filesReadModel.findAllFiles();
     const allFileIds = allFiles.map((file) => file.id);
 
@@ -41,12 +43,14 @@ export class ProcessReadsService {
     const resolveRootSourceIds = createRootSourceResolver(parentsByFile);
     const resolveProcessHistoryOriginFileIds = this.createProcessHistoryOriginResolver(versions, reads);
 
-    return buildProcessReads(
+    const items = buildProcessReads(
       reads,
       this.normalizer,
       resolveProcessHistoryOriginFileIds,
       resolveRootSourceIds,
     );
+
+    return paginateItems(items, filters, { defaultLimit: 250, maxLimit: 1000 });
   }
 
   private createProcessHistoryOriginResolver(
