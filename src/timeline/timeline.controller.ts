@@ -5,7 +5,7 @@ import { EventsService } from "./timeline.service";
 import { AnalysisTimelineEntry } from "./types/timeline-entry.type";
 import { PaginatedResult, PaginationQuery } from "../shared/types/pagination.type";
 
-@Controller(`/events`)
+@Controller(`/timeline`)
 @injectable()
 export class EventsController {
   constructor(
