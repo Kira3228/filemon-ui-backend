@@ -16,7 +16,7 @@ export class EventsController {
   async getEvents(
     req: Request<Record<string, never>, PaginatedResult<AnalysisTimelineEntry>, never, PaginationQuery>,
     res: Response<PaginatedResult<AnalysisTimelineEntry>>,
-  ) {
+  ): Promise<void> {
     const events = await this.eventsService.getEvents(req.query);
     res.status(200).json(events);
   }

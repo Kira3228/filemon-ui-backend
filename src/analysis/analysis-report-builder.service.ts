@@ -93,6 +93,8 @@ export class AnalysisReportBuilderService {
         return context.getChains() as AnalysisReportResult[K];
       case "notices":
         return context.getNotices() as AnalysisReportResult[K];
+      default:
+        throw new Error(`Unsupported analysis report section: ${String(section)}`);
     }
   }
 

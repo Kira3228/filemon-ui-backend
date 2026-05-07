@@ -16,7 +16,7 @@ export class OperationController {
   async getOperations(
     req: Request<Record<string, never>, PaginatedResult<AnalysisOperationItem>, never, PaginationQuery>,
     res: Response<PaginatedResult<AnalysisOperationItem>>,
-  ) {
+  ): Promise<void> {
     const operations = await this.operationService.getOperations(req.query);
     res.status(200).json(operations);
   }

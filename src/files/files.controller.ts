@@ -16,7 +16,7 @@ export class FilesController {
   async getFiles(
     req: Request<Record<string, never>, PaginatedResult<AnalysisFileItem>, never, PaginationQuery>,
     res: Response<PaginatedResult<AnalysisFileItem>>,
-  ) {
+  ): Promise<void> {
     const files = await this.filesService.getFiles(req.query);
     res.status(200).json(files);
   }

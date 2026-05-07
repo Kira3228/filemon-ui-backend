@@ -27,7 +27,6 @@ import {
 } from "../entities";
 import { HttpError, ValidationError } from "../errors/http-errors";
 import { ensureManualFileStatusEventsTable, validateSchemaSql } from "./schema";
-import { log } from "console";
 
 type PersistedDatabaseConfig = {
   databasePath: string;
@@ -60,7 +59,7 @@ export class AppDatabaseService {
   private connectionStatusMessage = "Путь к базе данных не задан";
   private connectionStatusDetails: unknown;
 
-  async initialize() {
+  async initialize(): Promise<void> {
     const storedConfig = this.ensurePersistedConfig();
     const initialDatabasePath = storedConfig?.databasePath || this.currentDatabasePath;
 
@@ -104,7 +103,7 @@ export class AppDatabaseService {
     };
   }
 
-  async updateDatabasePath(nextDatabasePath: string) {
+  async updateDatabasePath(nextDatabasePath: string): Promise<DatabaseConnectionSettings> {
     return this.openConnection(nextDatabasePath, true, true);
   }
 
@@ -131,7 +130,7 @@ export class AppDatabaseService {
   private async openConnection(
     databasePath: string,
     persistAfterConnect: boolean,
-    requireExistingFile: boolean = false,
+    requireExistingFile = false,
   ) {
     const normalizedDatabasePath = this.normalizeDatabasePath(databasePath, requireExistingFile);
     const nextConnection = await this.createDatabaseConnection(normalizedDatabasePath);
@@ -300,7 +299,7 @@ export class AppDatabaseService {
     return createConnection(options);
   }
 
-  private normalizeDatabasePath(databasePath: string, requireExistingFile: boolean = false) {
+  private normalizeDatabasePath(databasePath: string, requireExistingFile = false) {
     const trimmedPath = String(databasePath || "").trim();
     if (!trimmedPath) {
       throw new ValidationError("Укажите путь к базе данных");

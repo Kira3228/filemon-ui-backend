@@ -1,7 +1,7 @@
 import { Nullable } from "../../analysis/analysis.types";
 import { splitLast } from "./split-last";
 
-export const formatProcessDisplayName = (executablePath?: Nullable<string>, pid?: Nullable<number>, fallback = "proc") => {
+export const formatProcessDisplayName = (executablePath?: Nullable<string>, pid?: Nullable<number>, fallback = "proc"): string => {
   const executable = splitLast(executablePath || fallback);
   if (pid !== null && pid !== undefined) {
     return `${executable} (PID ${pid})`;

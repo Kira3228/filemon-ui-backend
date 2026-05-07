@@ -1,10 +1,13 @@
 export const createRootSourceResolver = (
   parentsByFile: Map<number, Set<number>>,
-) => {
+): (fileId: number, stack?: Set<number>) => number[] => {
   const rootMemo = new Map<number, number[]>();
 
   const resolveRootSourceIds = (fileId: number, stack = new Set<number>()): number[] => {
-    if (rootMemo.has(fileId)) return rootMemo.get(fileId)!;
+    const memoized = rootMemo.get(fileId)
+    if (memoized) {
+      return memoized
+    }
     if (stack.has(fileId)) return [fileId];
 
     const parents = Array.from(parentsByFile.get(fileId) || []);

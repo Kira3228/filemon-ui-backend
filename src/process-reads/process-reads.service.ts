@@ -113,8 +113,10 @@ export class ProcessReadsService {
         directOriginFileId ?? "null",
       ].join(":");
 
-      if (memo.has(memoKey)) {
-        return memo.get(memoKey)!;
+      const memoized = memo.get(memoKey);
+
+      if (memoized !== undefined) {
+        return memoized;
       }
 
       const result = new Set<number>();

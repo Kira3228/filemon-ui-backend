@@ -5,8 +5,6 @@ import cors from 'cors'
 import { container } from 'tsyringe'
 import { NotFoundError } from "./errors/http-errors";
 import { errorHandler } from "./middleware/error-handler";
-import { FileController } from "./event/event.controller";
-import { EventService } from "./event/event.service";
 import { AnalysisController } from "./analysis/analysis.controller";
 import { AppDatabaseService } from "./database/app-database.service";
 import { DatabaseSettingsController } from "./database/database-settings.controller";
@@ -25,7 +23,6 @@ import { DiagramDatasetService } from "./file-tree/file-tree.service";
 EventEmitter.defaultMaxListeners = 15;
 
 
-type ProviderClass<T = unknown> = new (...args: any[]) => T;
 
 
 async function bootstrap() {
@@ -44,16 +41,7 @@ async function bootstrap() {
     const connection = await databaseService.getConnection();
     registerRepositories(connection, repositoryTokens);
 
-    const providers: ProviderClass[] = [
-        EventService,
-    ];
-    providers.forEach((provider) => {
-        container.registerSingleton(provider);
-    });
-
-
     const controllers: ControllerClass[] = [
-        FileController,
         AnalysisController,
         DatabaseSettingsController,
         SourcesController
@@ -88,5 +76,4 @@ async function bootstrap() {
 
 bootstrap().catch(error => {
     console.error("Application startup failed:", error);
-    process.exit(1);
 });

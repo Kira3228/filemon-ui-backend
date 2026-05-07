@@ -1,6 +1,6 @@
 import { AnalysisFileRow, AnalysisFileVersionRow, AnalysisNormalizedFileEvent, AnalysisOperationRow } from "../shared/types/read-model-row.type";
 
-export const groupVersionsByFile = (versions: AnalysisFileVersionRow[], fileIds: number[]) => {
+export const groupVersionsByFile = (versions: AnalysisFileVersionRow[], fileIds: number[]): Map<number, AnalysisFileVersionRow[]> => {
   const result = new Map<number, AnalysisFileVersionRow[]>();
 
   for (const fileId of fileIds) {
@@ -17,7 +17,7 @@ export const groupVersionsByFile = (versions: AnalysisFileVersionRow[], fileIds:
   return result;
 }
 
-export const groupFileEventsByFile = (allFiles: AnalysisFileRow[], normalizedRenameRows: AnalysisNormalizedFileEvent[]) => {
+export const groupFileEventsByFile = (allFiles: AnalysisFileRow[], normalizedRenameRows: AnalysisNormalizedFileEvent[]): Map<number, AnalysisNormalizedFileEvent[]> => {
   const renameRowsByFile = new Map<number, AnalysisNormalizedFileEvent[]>();
 
   for (const file of allFiles) {
@@ -34,7 +34,7 @@ export const groupFileEventsByFile = (allFiles: AnalysisFileRow[], normalizedRen
 export const buildChildrenByFile = (
   parentsByFile: Map<number, Set<number>>,
   fileIds: number[],
-) => {
+): Map<number, Set<number>> => {
   const result = new Map<number, Set<number>>();
 
   for (const fileId of fileIds) {
@@ -50,12 +50,14 @@ export const buildChildrenByFile = (
   return result;
 }
 
-export const createRootSourceResolver = (parentsByFile: Map<number, Set<number>>) => {
+export const createRootSourceResolver = (parentsByFile: Map<number, Set<number>>):
+  (fileId: number, stack?: Set<number>) => number[] => {
   const memo = new Map<number, number[]>();
 
   const resolve = (fileId: number, stack = new Set<number>()): number[] => {
-    if (memo.has(fileId)) {
-      return memo.get(fileId)!;
+    const memoized = memo.get(fileId);
+    if (memoized) {
+      return memoized;
     }
 
     if (stack.has(fileId)) {
@@ -85,8 +87,8 @@ export const createRootSourceResolver = (parentsByFile: Map<number, Set<number>>
   return resolve;
 }
 
-export const createDescendantsResolver = (childrenByFile: Map<number, Set<number>>) => {
-  return (fileId: number) => {
+export const createDescendantsResolver = (childrenByFile: Map<number, Set<number>>): ((fileId: number) => number[]) => {
+  return (fileId: number): number[] => {
     const visited = new Set<number>();
     const queue = Array.from(childrenByFile.get(fileId) || []);
 
@@ -106,7 +108,7 @@ export const createDescendantsResolver = (childrenByFile: Map<number, Set<number
   };
 }
 
-export const groupReadsByFile = (reads: AnalysisOperationRow[], fileIds: number[]) => {
+export const groupReadsByFile = (reads: AnalysisOperationRow[], fileIds: number[]): Map<number, AnalysisOperationRow[]> => {
   const result = new Map<number, AnalysisOperationRow[]>();
 
   for (const fileId of fileIds) {
@@ -124,7 +126,7 @@ export const groupReadsByFile = (reads: AnalysisOperationRow[], fileIds: number[
   return result;
 }
 
-export const buildParentsByFile = (versions: AnalysisFileVersionRow[], fileIds: number[]) => {
+export const buildParentsByFile = (versions: AnalysisFileVersionRow[], fileIds: number[]): Map<number, Set<number>> => {
   const result = new Map<number, Set<number>>();
 
   for (const fileId of fileIds) {

@@ -16,7 +16,7 @@ export class StatusHistoryController {
   async getStatusHistory(
     req: Request<Record<string, never>, PaginatedResult<AnalysisStatusHistoryItem>, never, PaginationQuery>,
     res: Response<PaginatedResult<AnalysisStatusHistoryItem>>,
-  ) {
+  ): Promise<void> {
     const statusHistory = await this.statusHistoryService.getHistoryService(req.query);
     res.status(200).json(statusHistory);
   }

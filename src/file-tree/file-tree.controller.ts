@@ -12,12 +12,12 @@ export class DiagramDatasetController {
   constructor(
     private readonly fileTreeService: DiagramDatasetService
   ) { }
-  
+
   @Get()
   async getFileTree(
     req: Request<Record<string, never>, FileTreeResult, never, PaginationQuery>,
     res: Response<FileTreeResult>,
-  ) {
+  ): Promise<void> {
     const fileTree = await this.fileTreeService.getFileTree(req.query);
     res.status(200).json(fileTree);
   }

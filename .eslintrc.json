@@ -1,0 +1,44 @@
+{
+  "ignorePatterns": [
+    "dist/",
+    "node_modules/",
+    "jest.config.js"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "env": {
+    "node": true,
+    "es2020": true
+  },
+  "settings": {
+    "node": {
+      "version": "10.24.0"
+    }
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:node/recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parserOptions": {
+    "project": "./tsconfig.json",
+    "ecmaVersion": 11,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "node",
+    "@typescript-eslint"
+  ],
+  "rules": {},
+  "overrides": [
+    {
+      "files": [
+        "*.ts",
+        "**/*.ts"
+      ],
+      "rules": {
+        "node/no-unsupported-features/es-syntax": "off",
+        "node/no-missing-import": "off"
+      }
+    }
+  ]
+}

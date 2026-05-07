@@ -18,7 +18,7 @@ export class HttpError extends Error {
 }
 
 export class NotFoundError extends HttpError {
-  constructor(message: string = "Resource not found") {
+  constructor(message = "Resource not found") {
     super(404, message, "NOT_FOUND");
   }
 }

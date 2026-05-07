@@ -16,7 +16,7 @@ export class RenameHistoryController {
   async getRenameHistory(
     req: Request<Record<string, never>, PaginatedResult<AnalysisRenameHistoryItem>, never, PaginationQuery>,
     res: Response<PaginatedResult<AnalysisRenameHistoryItem>>,
-  ) {
+  ): Promise<void> {
     const renameHistory = await this.renameHistoryService.getRenameHistory(req.query);
     res.status(200).json(renameHistory);
   }

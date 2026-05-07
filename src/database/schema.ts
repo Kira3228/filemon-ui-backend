@@ -3,7 +3,7 @@ import path from "path";
 import { ValidationError } from "../errors/http-errors";
 
 export interface SqlExecutor {
-  query(sql: string, params?: any[]): Promise<any>;
+  query(sql: string, params?: unknown[]): Promise<unknown>;
 }
 
 const SCHEMA_FILE_PATH = path.resolve(__dirname, "..", "..", "schema.sql");
@@ -15,21 +15,21 @@ const stripSqlComments = (script: string) =>
     .filter((line) => !line.trim().startsWith("--"))
     .join("\n");
 
-export const splitSqlScript = (script: string) =>
+export const splitSqlScript = (script: string): string[] =>
   stripSqlComments(script)
     .split(";")
     .map((statement) => statement.trim())
     .filter(Boolean);
 
-export const loadSchemaSql = () => fs.readFileSync(SCHEMA_FILE_PATH, "utf8");
+export const loadSchemaSql = (): string => fs.readFileSync(SCHEMA_FILE_PATH, "utf8");
 
-export const executeSqlScript = async (executor: SqlExecutor, script: string) => {
+export const executeSqlScript = async (executor: SqlExecutor, script: string): Promise<void> => {
   for (const statement of splitSqlScript(script)) {
     await executor.query(statement);
   }
 };
 
-export const ensureSchemaSqlApplied = async (executor: SqlExecutor) => {
+export const ensureSchemaSqlApplied = async (executor: SqlExecutor): Promise<void> => {
   await executeSqlScript(executor, loadSchemaSql());
 };
 
@@ -90,7 +90,7 @@ const extractExpectedSchema = (script: string): ExpectedSchema => {
 
 const loadExpectedSchema = (): ExpectedSchema => extractExpectedSchema(loadSchemaSql());
 
-export const hasTable = async (executor: SqlExecutor, tableName: string) => {
+export const hasTable = async (executor: SqlExecutor, tableName: string): Promise<boolean> => {
   const tableRows = await executor.query(
     `SELECT name FROM sqlite_master WHERE type = 'table' AND name = ? LIMIT 1`,
     [tableName],
@@ -110,7 +110,7 @@ const extractStatementsForTable = (script: string, tableName: string) =>
     return new RegExp(`\\bON\\s+${tableName}\\b`, "i").test(normalized);
   });
 
-export const ensureManualFileStatusEventsTable = async (executor: SqlExecutor) => {
+export const ensureManualFileStatusEventsTable = async (executor: SqlExecutor): Promise<void> => {
   const tableName = "manual_file_status_events";
   if (await hasTable(executor, tableName)) {
     return;
@@ -122,7 +122,7 @@ export const ensureManualFileStatusEventsTable = async (executor: SqlExecutor) =
   }
 };
 
-export const validateSchemaSql = async (executor: SqlExecutor) => {
+export const validateSchemaSql = async (executor: SqlExecutor): Promise<void> => {
   const expectedSchema = loadExpectedSchema();
   const missingTables: string[] = [];
   const missingColumns: Array<{ table: string; columns: string[] }> = [];

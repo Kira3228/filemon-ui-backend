@@ -1,12 +1,13 @@
 import { Router } from "express";
 import { PREFIX_META, ROUTE_META, RouteInfo } from "./shared/utils/routing";
 import { container } from "tsyringe";
+import type constructor from "tsyringe/dist/typings/types/constructor";
 import { registerRoute } from "./register-route";
 
-export type ControllerClass = new (...args: any[]) => object;
-type ControllerInstance = object;
+type ControllerInstance = Record<string, unknown>;
+export type ControllerClass = constructor<unknown>;
 
-export const buildRouter = (controllers: ControllerClass[]) => {
+export const buildRouter = (controllers: ControllerClass[]): Router => {
   const versionRouter = Router();
 
   for (const ControllerClass of controllers) {

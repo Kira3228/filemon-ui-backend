@@ -137,7 +137,7 @@ export class AnalysisQueryService {
 
     if (!this.hasFiles(context)) {
       return context.sourceData
-    };
+    }
 
     await this.loadFileVersions(context);
     await this.loadReads(context);
@@ -534,7 +534,7 @@ export class AnalysisQueryService {
         .into(ManualFileStatusEvent)
         .values({
           file: { id: fileId } as File,
-          statusHistory: statusHistoryId ? { id: statusHistoryId } as FileStatus : null,
+          statusHistory: statusHistoryId ? { id: statusHistoryId } as FileStatus : undefined,
           action,
           previous_status: currentStatus,
           new_status: targetStatus,

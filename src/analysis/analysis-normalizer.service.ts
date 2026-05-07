@@ -1,6 +1,5 @@
 import { injectable } from "tsyringe";
 import {
-  AnalysisFileEventRow,
   AnalysisFileLink,
   AnalysisFilePathRef,
   AnalysisNormalizedFileEvent,
@@ -12,7 +11,7 @@ import { splitLast } from "../shared/utils/split-last";
 
 @injectable()
 export class AnalysisNormalizerService {
-  formatProcessDisplayName(executablePath?: Nullable<string>, pid?: Nullable<number>, fallback = "proc") {
+  formatProcessDisplayName(executablePath?: Nullable<string>, pid?: Nullable<number>, fallback = "proc"): string {
     const executable = splitLast(executablePath || fallback);
     if (pid !== null && pid !== undefined) {
       return `${executable} (PID ${pid})`;
@@ -22,12 +21,12 @@ export class AnalysisNormalizerService {
 
 
 
-  normalizeExportCell(value: string | number | boolean | null | undefined) {
+  normalizeExportCell(value: string | number | boolean | null | undefined): string {
     if (value === null || value === undefined) { return ""; }
     return String(value);
   }
 
-  toFileName(title: string) {
+  toFileName(title: string): string {
     const normalized = title
       .toLowerCase()
       .replace(/[^a-z0-9а-яё]+/gi, "_")
@@ -36,11 +35,11 @@ export class AnalysisNormalizerService {
     return normalized || "table_export";
   }
 
-  getFileName(value?: Nullable<string>) {
+  getFileName(value?: Nullable<string>): string {
     return splitLast(value);
   }
 
-  buildPathHistory(currentPath: string, renameRows: AnalysisNormalizedFileEvent[]) {
+  buildPathHistory(currentPath: string, renameRows: AnalysisNormalizedFileEvent[]): string[] {
     const seen = new Set<string>();
     const result: string[] = [];
     for (const row of renameRows) {
@@ -56,7 +55,7 @@ export class AnalysisNormalizerService {
     return result;
   }
 
-  buildProcessLabel(row: AnalysisProcessContext) {
+  buildProcessLabel(row: AnalysisProcessContext): string {
     const executable = this.formatProcessDisplayName(row.executable_path, row.pid, "proc");
     const version = row.process_version_number ?? 1;
     if (row.username && row.uid !== null && row.uid !== undefined) {
@@ -67,7 +66,7 @@ export class AnalysisNormalizerService {
     return `${executable} v${version}`;
   }
 
-  getOriginProcess(row?: Nullable<AnalysisProcessContext>) {
+  getOriginProcess(row?: Nullable<AnalysisProcessContext>): string {
     if (!row?.origin_process_version_id) return "SOURCE";
     return this.formatProcessDisplayName(row.executable_path, row.pid, "proc");
   }
@@ -77,7 +76,7 @@ export class AnalysisNormalizerService {
     fileId: Nullable<number>,
     fileItemsById: Map<number, { currentStatus: string; lastStatusAt: Nullable<string> }>,
     statusHistory: Array<{ fileId: number; createdAt: string; nextStatus: string }>,
-  ) {
+  ): string | null {
     if (fileId === null || fileId === undefined) {
       return null;
     }
@@ -110,7 +109,7 @@ export class AnalysisNormalizerService {
     return "Отслеживается";
   }
 
-  getOriginUser(row?: Nullable<AnalysisProcessContext>) {
+  getOriginUser(row?: Nullable<AnalysisProcessContext>): string {
     if (!row?.origin_process_version_id) return "SOURCE";
     if (row.username) return row.username;
     if (row.uid !== null && row.uid !== undefined) return `uid:${row.uid}`;
@@ -130,7 +129,7 @@ export class AnalysisNormalizerService {
 
 
 
-  formatStatus(rawStatus?: Nullable<string | number>) {
+  formatStatus(rawStatus?: Nullable<string | number>): string {
     const normalizedStatus =
       rawStatus === null || rawStatus === undefined || rawStatus === ""
         ? rawStatus
@@ -150,33 +149,41 @@ export class AnalysisNormalizerService {
     }
   }
 
-  toSqliteDateTime(date: Date) {
+  toSqliteDateTime(date: Date): string {
     return date.toISOString().slice(0, 19).replace("T", " ");
   }
 
-  compactRenameText(oldPath?: Nullable<string>, newPath?: Nullable<string>, outOfScope?: boolean) {
+  compactRenameText(oldPath?: Nullable<string>, newPath?: Nullable<string>, outOfScope?: boolean): string {
     const base = [oldPath || "?", newPath || "?"].join(" -> ");
     return outOfScope ? `${base} [out-of-scope]` : base;
   }
 
-  sortDesc(a: SortableValue, b: SortableValue, fallbackA?: SortableValue, fallbackB?: SortableValue) {
+  sortDesc(a: SortableValue, b: SortableValue, fallbackA?: SortableValue, fallbackB?: SortableValue): number {
     const aValue = a ? String(a) : "";
     const bValue = b ? String(b) : "";
+    const fallbackAValue = fallbackA ? String(fallbackA) : "";
+    const fallbackBValue = fallbackB ? String(fallbackB) : "";
+
     if (aValue === bValue) {
-      if (fallbackA === fallbackB) return 0;
-      return fallbackA > fallbackB ? -1 : 1;
+      if (fallbackAValue === fallbackBValue) {
+        return 0;
+      }
+
+      return fallbackAValue > fallbackBValue ? -1 : 1;
     }
     return aValue > bValue ? -1 : 1;
   }
 
-  sortAsc(a: SortableValue, b: SortableValue, fallbackA?: SortableValue, fallbackB?: SortableValue) {
+  sortAsc(a: SortableValue, b: SortableValue, fallbackA?: SortableValue, fallbackB?: SortableValue): number {
     const aValue = a ? String(a) : "";
     const bValue = b ? String(b) : "";
+    const fallbackAValue = fallbackA ? String(fallbackA) : "";
+    const fallbackBValue = fallbackB ? String(fallbackB) : "";
     if (aValue === bValue) {
-      if (fallbackA === fallbackB) {
+      if (fallbackAValue === fallbackBValue) {
         return 0
-      };
-      return fallbackA > fallbackB ? 1 : -1;
+      }
+      return fallbackAValue > fallbackBValue ? 1 : -1;
     }
     return aValue > bValue ? 1 : -1;
   }

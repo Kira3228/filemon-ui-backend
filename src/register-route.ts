@@ -2,13 +2,13 @@ import { Router } from "express";
 import { RouteInfo } from "./shared/utils/routing";
 import { asyncHandler, RouteHandler } from "./shared/utils/async-handler";
 
-type ControllerInstance = object;
+type ControllerInstance = Record<string, unknown>;
 
 export const registerRoute = (
   router: Router,
   route: RouteInfo,
   instance: ControllerInstance,
-) => {
+): void => {
   const routeHandler = (instance as Record<string, unknown>)[route.handler];
 
   if (typeof routeHandler !== "function") {

@@ -1,6 +1,6 @@
 import { Nullable } from "../../analysis/analysis.types";
 
-export const splitLast = (value?: Nullable<string>) => {
+export const splitLast = (value?: Nullable<string>): string => {
   const text = String(value || "").trim();
   if (!text) return "-";
   const parts = text.split(/[\\/]/).filter(Boolean);

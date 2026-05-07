@@ -11,12 +11,12 @@ export interface RouteInfo {
   handler: string;
 }
 
-type ControllerClass = new (...args: never[]) => object;
+type ControllerClass = new (...args: never[]) => Record<string, unknown>;
 type ControllerPrototype = {
   constructor: ControllerClass;
 };
 
-export const Controller = (prefix: string = ''): ClassDecorator =>
+export const Controller = (prefix = ''): ClassDecorator =>
   (target) => Reflect.defineMetadata(PREFIX_META, prefix, target);
 
 const routeDecorator = (method: HttpMethod, path: string): MethodDecorator =>
@@ -27,7 +27,7 @@ const routeDecorator = (method: HttpMethod, path: string): MethodDecorator =>
     Reflect.defineMetadata(ROUTE_META, routes, controllerClass);
   };
 
-export const Get = (path: string = '') => routeDecorator('get', path);
-export const Post = (path: string = '') => routeDecorator('post', path);
-export const Patch = (path: string = '') => routeDecorator('patch', path);
-export const Delete = (path: string = '') => routeDecorator('delete', path);
+export const Get = (path = ''): MethodDecorator => routeDecorator('get', path);
+export const Post = (path = ''): MethodDecorator => routeDecorator('post', path);
+export const Patch = (path = ''): MethodDecorator => routeDecorator('patch', path);
+export const Delete = (path = ''): MethodDecorator => routeDecorator('delete', path);

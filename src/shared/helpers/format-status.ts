@@ -1,6 +1,6 @@
 import { Nullable } from "../../analysis/analysis.types";
 
-export const formatStatus = (rawStatus?: Nullable<string | number>) => {
+export const formatStatus = (rawStatus?: Nullable<string | number>): string => {
   const normalizedStatus =
     rawStatus === null || rawStatus === undefined || rawStatus === ""
       ? rawStatus

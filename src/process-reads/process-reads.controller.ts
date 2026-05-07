@@ -16,7 +16,7 @@ export class ProcessReadsController {
   async getProcessReads(
     req: Request<Record<string, never>, PaginatedResult<AnalysisProcessReadGroup>, never, PaginationQuery>,
     res: Response<PaginatedResult<AnalysisProcessReadGroup>>,
-  ) {
+  ): Promise<void> {
     const processReads = await this.processReadsService.getProcessReads(req.query);
     res.status(200).json(processReads);
   }

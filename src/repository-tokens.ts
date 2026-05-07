@@ -1,10 +1,11 @@
 import { InjectionToken } from "tsyringe"
+import { EntityTarget } from "typeorm";
 import { FileEventsRepositoryToken, FileReadRepositoryToken, FileRepositoryToken, FileStatusRepositoryToken, FileVersionRepositoryToken, FileWriteRepositoryToken, ManualFileStatusEventRepositoryToken, ProcessRepositoryToken, ProcessVersionRepositoryToken, } from "./constants/tokens"
 import { File, FileEvent, FileRead, FileStatus, FileVersion, FileWrite, ManualFileStatusEvent, Process, ProcessVersion } from "./entities"
 
 interface RepositoryToken {
   token: InjectionToken,
-  entity: unknown
+  entity: EntityTarget<unknown>
 }
 export const repositoryTokens: RepositoryToken[] = [
   {

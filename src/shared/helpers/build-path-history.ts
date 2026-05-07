@@ -3,7 +3,7 @@ import { AnalysisNormalizedFileEvent } from "../../analysis/analysis.types";
 export const buildPathHistory = (
   currentPath: string,
   renameRows: AnalysisNormalizedFileEvent[] = [],
-) => {
+): string[] => {
   const seen = new Set<string>();
   const result: string[] = [];
 

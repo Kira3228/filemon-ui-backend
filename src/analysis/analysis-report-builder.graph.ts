@@ -22,11 +22,14 @@ interface BuildFileGraphOptions {
 
 export const createRootSourceResolver = (
   parentsByFile: Map<number, Set<number>>,
-) => {
+): (fileId: number, stack?: Set<number>) => number[] => {
   const rootMemo = new Map<number, number[]>();
 
   const resolveRootSourceIds = (fileId: number, stack = new Set<number>()): number[] => {
-    if (rootMemo.has(fileId)) return rootMemo.get(fileId)!;
+    const memoized = rootMemo.get(fileId);
+    if (memoized !== undefined) {
+      return memoized;
+    }
     if (stack.has(fileId)) return [fileId];
 
     const parents = Array.from(parentsByFile.get(fileId) || []);
@@ -53,18 +56,22 @@ export const createRootSourceResolver = (
 
 export const createDescendantsResolver = (
   childrenByFile: Map<number, Set<number>>,
-) => (fileId: number) => {
-  const visited = new Set<number>();
-  const queue = [...Array.from(childrenByFile.get(fileId) || [])];
-  while (queue.length) {
-    const current = queue.shift();
-    if (current === undefined || visited.has(current)) continue;
-    visited.add(current);
-    for (const childId of Array.from(childrenByFile.get(current) || [])) {
-      queue.push(childId);
+): ((fileId: number) => number[]) => {
+  return (fileId: number): number[] => {
+    const visited = new Set<number>();
+    const queue = [...Array.from(childrenByFile.get(fileId) || [])];
+
+    while (queue.length) {
+      const current = queue.shift();
+      if (current === undefined || visited.has(current)) continue;
+      visited.add(current);
+      for (const childId of Array.from(childrenByFile.get(current) || [])) {
+        queue.push(childId);
+      }
     }
-  }
-  return Array.from(visited).sort((a, b) => a - b);
+
+    return Array.from(visited).sort((a, b) => a - b);
+  };
 };
 
 export const buildFileItems = ({

@@ -1,7 +1,7 @@
 import { AnalysisProcessContext } from "../../analysis/analysis.types";
 import { formatProcessDisplayName } from "./format-process-display-name";
 
-export const buildProcessLabel = (row: AnalysisProcessContext) => {
+export const buildProcessLabel = (row: AnalysisProcessContext): string => {
   const executable = formatProcessDisplayName(row.executable_path, row.pid, "proc");
   const version = row.process_version_number ?? 1;
   if (row.username && row.uid !== null && row.uid !== undefined) {

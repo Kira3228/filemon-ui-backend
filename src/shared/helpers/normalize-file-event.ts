@@ -29,6 +29,9 @@ export const normalizeFileEvent = (
     label = kind === "MOVE_RENAME" ? "Перемещен и переименован" : "Перемещен";
   }
 
+  const currentPath = filesById.get(row.file_id)?.full_path ?? newPath ?? oldPath;
+  if (!currentPath) return null;
+
   return {
     id: row.id,
     fileId: row.file_id,
@@ -39,6 +42,6 @@ export const normalizeFileEvent = (
     outOfScope: Boolean(details.out_of_scope),
     details,
     createdAt: row.created_at,
-    currentPath: filesById.get(row.file_id)?.full_path || newPath || oldPath,
+    currentPath,
   };
 }

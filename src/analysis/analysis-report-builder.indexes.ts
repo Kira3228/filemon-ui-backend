@@ -136,8 +136,9 @@ export const buildAnalysisReportIndexes = (
       processVersionNumber ?? "null",
       directOriginFileId ?? "null",
     ].join(":");
-    if (processHistorySourceMemo.has(memoKey)) {
-      return processHistorySourceMemo.get(memoKey)!;
+    const memoized = processHistorySourceMemo.get(memoKey);
+    if (memoized !== undefined) {
+      return memoized;
     }
 
     const indexedProcessVersion = processVersionId
