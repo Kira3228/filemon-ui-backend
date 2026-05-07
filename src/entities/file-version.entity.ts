@@ -27,7 +27,7 @@ export class FileVersion {
 
   // убираем @Column() origin_process_version_id
 
-  @Column({ nullable: true })
+  @Column({ type: "integer", nullable: true })
   depth!: number | null;
 
   @CreateDateColumn()

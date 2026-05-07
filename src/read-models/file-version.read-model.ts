@@ -50,7 +50,7 @@ export class FileVersionReadModel {
       .getRawMany() as Promise<AnalysisFileVersionRow[]>;
   }
 
-  async findAllFileVersions(): Promise<FileVersion[]> {
-    return this.buildFileVersionsQuery().getMany()
+  async findAllFileVersions(): Promise<AnalysisFileVersionRow[]> {
+    return this.buildFileVersionsQuery().getRawMany() as Promise<AnalysisFileVersionRow[]>;
   }
 }

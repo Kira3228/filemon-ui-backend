@@ -19,6 +19,7 @@ import { StatusHistoryController } from "./status-history/status-history.control
 import { RenameHistoryController } from "./rename-history/rename-history.controller";
 import { ProcessReadsController } from "./process-reads/process-reads.controller";
 import { DiagramDatasetService } from "./file-tree/file-tree.service";
+import { OverviewController } from "./overview/overview.controller";
 
 EventEmitter.defaultMaxListeners = 15;
 
@@ -55,7 +56,9 @@ async function bootstrap() {
         StatusHistoryController,
         RenameHistoryController,
         ProcessReadsController,
-        DiagramDatasetService
+        DiagramDatasetService,
+        OverviewController,
+
     ]
 
     const v1Router = buildRouter(controllers)

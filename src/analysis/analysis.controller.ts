@@ -70,7 +70,7 @@ export class AnalysisController {
     res.set("Cache-Control", "no-store");
     res.status(200).json(result);
   }
-
+ 
   @Get(`/report/overview`)
   async getReportOverview(
     req: Request<Record<string, never>, AnalysisReportResult["overview"], never, AnalysisReportQuery>,

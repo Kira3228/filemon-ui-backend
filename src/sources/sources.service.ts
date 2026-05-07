@@ -25,7 +25,7 @@ export class SourcesService {
     private readonly fileEventRowReadModel: FileEventRowReadModel
   ) { }
 
-  async getSources(filters: SourceDto): Promise<SourceListResult> {
+  async getSources(filters?: SourceDto): Promise<SourceListResult> {
     const { page, limit } = normalizePagination(filters, { defaultLimit: 250, maxLimit: 1000 });
 
     const [rootFiles, total] = await Promise.all([
